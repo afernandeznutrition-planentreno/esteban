@@ -386,8 +386,9 @@ nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width
    Plan ESTRICTO: cero grupos opcionales salvo el postre de la comida, y una
    sola ración por alimento en cada grupo.
    Lleva entrenamiento propio: empuje / tirón / pierna / hyrox, sin día fijo.
-   NADA de queso fermentado (curado, semicurado, lonchas, mozzarella,
-   parmesano ni fresco de bloque). Toda la familia del yogur, sí.
+   NADA de queso, de ningún tipo: ni curado, ni semicurado, ni lonchas, ni
+   mozzarella, ni parmesano, ni fresco de bloque, NI queso fresco batido.
+   Sí toda la familia del yogur (natural, griego, skyr, de proteína).
    Todo lo editable del cliente vive en este bloque DEFAULT_PLAN.
    ===================================================================== */
 
@@ -454,8 +455,6 @@ const DEFAULT_PLAN = {
     // ---- la familia del yogur, toda dentro. Cero queso fermentado ----
     skyr250:       ["Skyr", "250 g", 158, 27.5, 10, 0.5, "1 tarrina grande"],
     skyr150:       ["Skyr", "150 g", 95, 16.5, 6, 0.3, "1 tarrina"],
-    quesobatido250:["Queso fresco batido 0 %", "250 g", 125, 20, 10, 0.5, "1 tarrina"],
-    quesobatido125:["Queso fresco batido 0 %", "125 g", 63, 10, 5, 0.3, "media tarrina"],
     yogurprot:     ["Yogur o natillas de proteína", "160-200 g", 115, 20, 5, 2, "1 tarrina"],
     yogurgriego150:["Yogur griego 0 %", "150 g", 90, 15, 6, 0.5, "1 yogur"],
     yogurnat2:     ["Yogur natural", "2 unidades · 250 g", 153, 9, 12, 8, "2 yogures"],
@@ -513,7 +512,6 @@ const DEFAULT_PLAN = {
     cap_cremaprot: ["Crema de arroz con proteína (suple)", "80 g + 1 cazo", 424, 29.6, 69, 2.8, "1 tazón"],
     cap_pancakes:  ["Pancakes de copos de avena y proteína (suple)", "50 g de copos + 1 cazo + 2 claras", 344, 38, 32, 5.5, "3-4 tortitas"],
     cap_skyrcacao: ["Skyr con cacao y plátano", "250 g + 5 g de cacao + 1 plátano", 285, 30, 38, 1.5, "1 tarrina"],
-    cap_natillas:  ["Natillas proteicas de queso batido con cacao", "250 g + cacao", 159, 22, 11.5, 1.6, "1 tarrina"],
     cap_yogurnuez: ["Yogur griego con frutos secos y miel", "150 g + 20 g + 1 cucharadita", 250, 18.5, 15, 11.5, "1 yogur"],
     cap_tostada:   ["Tostada de aguacate y huevo", "80 g de pan + medio aguacate + 2 huevos", 468, 21.6, 34.4, 24.6, "2 tostadas"],
     creatina3:     ["Creatina monohidrato (suple)", "3 g", 0, 0, 0, 0, "media cucharadita"],
@@ -543,9 +541,9 @@ const DEFAULT_PLAN = {
       "merluza200","merluza150","salmon130","salmon100",
       "atun2","atun1","gambas200","huevos2","huevos3","huevos22","huevos32",
       "pavolonchas100","jamoncocido100","jamonserrano60","legumbre250","prot30","prot15",
-      "skyr250","skyr150","quesobatido250","quesobatido125","yogurprot","yogurgriego150","yogurnat2",
+      "skyr250","skyr150","yogurprot","yogurgriego150","yogurnat2",
       "leche300","leche200","cortados2",
-      "cap_avenaprot","cap_cremaprot","cap_pancakes","cap_skyrcacao","cap_natillas","cap_yogurnuez"] },
+      "cap_avenaprot","cap_cremaprot","cap_pancakes","cap_skyrcacao","cap_yogurnuez"] },
     { id:"hc", nombre:"Hidratos de carbono", icon:"🍚", ids:[
       "arroz120","arroz100","arroz80","arroz60","pasta120","pasta100","pasta80","pasta60",
       "patata500","patata400","patata350","patata300","patata200","boniato450","boniato300","boniato250",
@@ -591,7 +589,7 @@ const DEFAULT_PLAN = {
       { id:"mediamanana", nombre:"Media mañana", icon:"🥣", hora:"11:00",
         modos:[
           { id:"tazon", fam:"Dulce", nombre:"Tazón", grupos:[
-            { id:"base", nombre:"Base", tipo:"one", ops:["leche200","yogurgriego150","quesobatido125"] },
+            { id:"base", nombre:"Base", tipo:"one", ops:["leche200","yogurgriego150","skyr150"] },
             { id:"prot", nombre:"Proteína", nota:"1 cazo, siempre", tipo:"one", ops:["prot30"] },
             { id:"hc",   nombre:"Cereal", tipo:"one", ops:["cremaarroz50","avenasabor50","avena50"] },
             { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
@@ -622,7 +620,7 @@ const DEFAULT_PLAN = {
           { id:"hc",   nombre:"Hidratos", nota:"pesa el arroz y la pasta EN SECO: cocidos engañan al ojo", tipo:"one", ops:["arroz120","pasta120","patata500","boniato450"] },
           { id:"veg",  nombre:"Ensalada o verdura", nota:"dentro del plato, no de guarnición triste al lado", tipo:"one", ops:["ensalada","calabacin200","judiaverde200","brocoli200","champi150","espinacas200","esparragos150","pimicebolla100","tomatetrit100","cremacalab250"] },
           { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove15"] },
-          { id:"postre",nombre:"Postre opcional", nota:"el único opcional de todo el plan", tipo:"one", ops:["fruta200","skyr150","yogurprot","quesobatido125","cafe","infusion","refrescozero"] }
+          { id:"postre",nombre:"Postre opcional", nota:"el único opcional de todo el plan", tipo:"one", ops:["fruta200","skyr150","yogurprot","cafe","infusion","refrescozero"] }
         ],
         notas:[["Es la comida grande del día","800 kcal de las 2.600. Proteína a la plancha o al horno, el hidrato a peso y la ensalada o la verdura dentro del plato."],
                ["El aceite es el que se descontrola","Una cucharada sopera son 10 g y 90 kcal. Tres chorros a ojo en la sartén pueden ser 40 g. Échalo con cuchara, no con la botella."]] },
@@ -637,7 +635,7 @@ const DEFAULT_PLAN = {
             { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días. Aquí, que es cuando entrenas. El día que no entrenes también.", tipo:"many", ops:["creatina3"] }
           ]},
           { id:"lacteo", fam:"Dulce", nombre:"Lácteo", grupos:[
-            { id:"base", nombre:"Lácteo", tipo:"one", ops:["yogurgriego150","skyr250","quesobatido250","yogurprot","yogurnat2"] },
+            { id:"base", nombre:"Lácteo", tipo:"one", ops:["yogurgriego150","skyr250","yogurprot","yogurnat2"] },
             { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["avenasabor50","avena50","tortitas5","panint60"] },
             { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
             { id:"gra",  nombre:"Grasa", tipo:"one", ops:["fsecos20","cremacacah20"] },
@@ -651,7 +649,7 @@ const DEFAULT_PLAN = {
             { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días.", tipo:"many", ops:["creatina3"] }
           ]},
           { id:"capricho", fam:"Dulce", nombre:"Capricho", grupos:[
-            { id:"combo",nombre:"Combinación", tipo:"one", ops:["cap_skyrcacao","cap_yogurnuez","cap_natillas"] },
+            { id:"combo",nombre:"Combinación", tipo:"one", ops:["cap_skyrcacao","cap_yogurnuez"] },
             { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["avenasabor50","tortitas3","panint60"] },
             { id:"gra",  nombre:"Grasa", tipo:"one", ops:["fsecos20","cremacacah20"] },
             { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días.", tipo:"many", ops:["creatina3"] }
@@ -666,7 +664,7 @@ const DEFAULT_PLAN = {
           { id:"hc",   nombre:"Hidratos", tipo:"one", ops:["arroz100","patata350","pasta100","panint100","boniato300"] },
           { id:"veg",  nombre:"Ensalada o verdura", tipo:"one", ops:["ensalada","calabacin200","judiaverde200","espinacas200","brocoli200","champi150","esparragos150","cremacalab250","tomate200"] },
           { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove15"] },
-          { id:"postre",nombre:"Postre", tipo:"one", ops:["fruta200","quesobatido125","infusion"] }
+          { id:"postre",nombre:"Postre", tipo:"one", ops:["fruta200","skyr150","infusion"] }
         ],
         notas:[["Cenas tarde, así que cena ligero de grasa","A las 21:45 lo que mejor sienta es proteína magra, hidrato y verdura. La grasa alta a esa hora es la que te deja la digestión abierta a medianoche."],
                ["Hidratos en la cena, sí","No hay ninguna razón para quitarlos. Entrenas cuatro días y juegas al pádel: el arroz o la patata de la noche es lo que rellena el depósito para el entreno del día siguiente."]] }
@@ -870,7 +868,7 @@ const DEFAULT_PLAN = {
   entrenos: [
     { id:"empuje", nombre:"Empuje", dia:"Pecho, hombro y tríceps · 18 series", ejercicios:[
       { n:"Press banca en máquina", icon:"banca", reps:"8-10 / 12 / 12", series:3, rest:180, pesoRef:50,
-        spec:"TOP SET la 1.ª serie a 8-10 rep. Las dos siguientes, BACK OFF: mismo ejercicio con un 15 % menos de peso y 12 rep. Aquí no hay drop." },
+        spec:"ANTES DEL TOP SET: 1 serie de aproximación de 12-15 rep con la mitad del peso, sin acercarte al fallo. No se apunta: es calentamiento. · TOP SET la 1.ª serie a 8-10 rep. Las dos siguientes, BACK OFF: mismo ejercicio con un 15 % menos de peso y 12 rep. Aquí no hay drop." },
       { n:"Press horizontal en máquina", icon:"press_horiz", reps:"10-12", series:3, rest:180, pesoRef:50,
         spec:"Tres series normales, dejando 1 repetición en el depósito en las dos primeras." },
       { n:"Apertura de pecho en máquina", icon:"apertura", reps:"10-12 + drop", series:3, rest:180, pesoRef:25,
@@ -884,7 +882,7 @@ const DEFAULT_PLAN = {
     ]},
     { id:"tiron", nombre:"Tirón", dia:"Espalda, bíceps y abdomen · 18 series", ejercicios:[
       { n:"Remo sentado en polea", icon:"remo_sentado", reps:"8-10 / 12 / 12", series:3, rest:180, pesoRef:60,
-        spec:"TOP SET la 1.ª a 8-10 rep. Las dos siguientes, BACK OFF con un 15 % menos y 12 rep. El peso del top set es el número que perseguimos cada semana." },
+        spec:"ANTES DEL TOP SET: 1 serie de aproximación de 12-15 rep con la mitad del peso, sin acercarte al fallo. No se apunta. · TOP SET la 1.ª a 8-10 rep. Las dos siguientes, BACK OFF con un 15 % menos y 12 rep. El peso del top set es el número que perseguimos cada semana." },
       { n:"Jalón al pecho agarre abierto", icon:"jalon_abierto", reps:"8-10", series:3, rest:180, pesoRef:60,
         spec:"Tres series normales. Tira con el codo hacia el bolsillo, no con la mano." },
       { n:"Jalón al pecho agarre cerrado (o dominadas asistidas)", icon:"jalon_cerrado", reps:"10-12 + drop", series:3, rest:180, pesoRef:55,
@@ -898,7 +896,7 @@ const DEFAULT_PLAN = {
     ]},
     { id:"pierna", nombre:"Pierna", dia:"Cuádriceps, isquio, glúteo y gemelo · 18 series", ejercicios:[
       { n:"Prensa", icon:"prensa", reps:"8-10 / 12 / 12", series:3, rest:180, pesoRef:75,
-        spec:"TOP SET la 1.ª a 8-10 rep. Las dos siguientes, BACK OFF con un 15 % menos y 12 rep." },
+        spec:"ANTES DEL TOP SET: 1 serie de aproximación de 12-15 rep con la mitad del peso, sin acercarte al fallo. No se apunta. · TOP SET la 1.ª a 8-10 rep. Las dos siguientes, BACK OFF con un 15 % menos y 12 rep." },
       { n:"Peso muerto rumano (mancuernas o barra)", icon:"rumano", reps:"8-10", series:3, rest:180, pesoRef:20,
         spec:"NUEVO · empieza con 20 + 20 kg. SIN back-off y SIN drop, a propósito: es el único ejercicio del plan donde la técnica se rompe con la fatiga y se paga con la espalda. Busca sensación de estiramiento en el isquio, no peso." },
       { n:"Extensión de cuádriceps", icon:"ext_cuad", reps:"10-12 + drop", series:3, rest:180, pesoRef:50,
@@ -961,7 +959,7 @@ const DEFAULT_PLAN = {
       "1 patata mediana ≈ 200 g · 1 patata grande ≈ 300 g · 1 boniato mediano ≈ 250 g. Con el ojo basta aquí.",
       "1 plato pequeño de arroz o pasta ≈ 1 patata grande ≈ 1 boniato mediano ≈ 3 rebanadas de pan integral. Intercambiables como hidrato.",
       "Medio bote de legumbre escurrido hace de proteína Y de hidrato: ese día no añadas arroz ni patata, y suma 120 g de pollo para llegar a la proteína.",
-      "NADA de queso fermentado: ni curado, ni semicurado, ni tierno, ni en lonchas, ni mozzarella, ni parmesano, ni fresco de bloque. En su sitio va la familia del yogur, que sí te gusta entera: yogur natural, griego, skyr, yogures de proteína y queso fresco batido de tarrina.",
+      "NADA de queso: ni curado, ni semicurado, ni tierno, ni en lonchas, ni mozzarella, ni parmesano, ni fresco de bloque, NI queso fresco batido de tarrina. En su sitio va la familia del yogur: yogur natural, yogur griego, skyr y yogures o natillas de proteína. Y el batido de proteína, que es lo que usas de suplemento.",
       "La ensalada y las verduras no se cuentan. Ponlas sin medirlas: son lo que hace que un plato de 800 kcal parezca un plato de comida y no una ración de gimnasio.",
       "Agua, agua con gas, refrescos zero, café solo e infusiones son libres: no se apuntan y no cuentan. La creatina tampoco tiene calorías.",
       "Los suplementos van marcados con «(suple)». Son comida, no medicina: cuentan igual que un plato."
@@ -974,6 +972,7 @@ const DEFAULT_PLAN = {
     "3 MINUTOS de descanso entre serie y serie en los tres días de pesas, en todos los ejercicios. Con ese descanso la segunda y la tercera serie salen con el mismo peso que la primera, que es de donde viene la progresión. El cronómetro de cada ejercicio ya está puesto en 3:00.",
     "Cada ejercicio lleva un dibujo al lado para que lo identifiques en el gimnasio de un vistazo. Es para reconocer la máquina y el movimiento, no para aprender la técnica: si dudas de cómo se hace uno, pregúntame antes de cargarlo.",
     "Top set y back-off van SOLO en el primer ejercicio de cada día: press banca, remo sentado y prensa. Los back-off van anclados al top set, siempre un 15 % menos: si el top set sube, ellos suben. No los progreses por separado.",
+    "En esos tres ejercicios, ANTES del top set haz 1 serie de aproximación: 12-15 repeticiones con la mitad del peso, sin acercarte al fallo. No se apunta, porque no es trabajo: es engrasar el movimiento. Ahí es donde va tu serie larga de 20, no delante de las series de trabajo — el top set tiene que caer con el músculo fresco, que es de donde sale el peso que perseguimos.",
     "Drop set SOLO en el último ejercicio de cada grupo muscular, y solo en máquina o polea. Una bajada del 30-35 %, sin descanso, hasta que la técnica se ensucie.",
     "Los drop sets NO se progresan ni se apuntan como marca. El número que perseguimos es el de las series de trabajo. Si intentas subir peso en los drops, solo llegas peor al entreno siguiente: el drop es el postre, no el plato.",
     "Deja 1 repetición en el depósito en las series que no son la última. Con déficit encima, entrenar al fallo en todo te deja sin recuperación. La excepción son los drops.",
