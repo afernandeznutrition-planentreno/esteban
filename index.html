@@ -241,6 +241,14 @@ header{
 .dsel button span{display:block;font-size:11px;color:var(--dim2);font-weight:400;margin-top:2px}
 .ex{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin:10px 0;padding:13px 14px}
 .ex .exh{display:flex;gap:9px;align-items:baseline;margin-bottom:3px}
+/* pictograma del ejercicio · SVG en línea, hereda el color del acento */
+.ex .exh{align-items:flex-start}
+.ejsvg{width:52px;height:52px;flex:0 0 52px;display:block;color:var(--acc);
+  background:var(--bg2);border-radius:9px;padding:1px;margin-top:-2px}
+.ejsvg .eq{stroke-width:1.6;opacity:.5}
+.ejsvg .fl{stroke-width:1.9;opacity:.85}
+.ejsvg .re{fill:currentColor;stroke:none;opacity:.9}
+.ejsvg .pt{stroke-width:4.6}
 .ex .exn{font-weight:650;font-size:14px;flex:1;line-height:1.3}
 .ex .exi{font-size:11.5px;color:var(--dim2);margin-bottom:9px}
 .ex .exi b{color:var(--dim);font-weight:600}
@@ -375,6 +383,8 @@ nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width
    RECOMPOSICIÓN CORPORAL con déficit ligero (2.600 kcal).
    83 kg · 1,83 m. Un solo tipo de día: entrene o no, come lo mismo.
    4 comidas + los 2 cortados de la mañana. Sin desayuno sólido.
+   Plan ESTRICTO: cero grupos opcionales salvo el postre de la comida, y una
+   sola ración por alimento en cada grupo.
    Lleva entrenamiento propio: empuje / tirón / pierna / hyrox, sin día fijo.
    NADA de queso fermentado (curado, semicurado, lonchas, mozzarella,
    parmesano ni fresco de bloque). Toda la familia del yogur, sí.
@@ -390,7 +400,7 @@ const DEFAULT_PLAN = {
   tipoUnico: true,
   marcarEleccion: true,
   objetivos: {
-    entreno: { kcal: 2600, p: 145, hc: 325, g: 80 }
+    entreno: { kcal: 2600, p: 150, hc: 320, g: 78 }
   },
   pasosObjetivo: 10000,
 
@@ -405,11 +415,12 @@ const DEFAULT_PLAN = {
   peso: {
     modo: "recomp",
     vista: "recomp",
-    cada: "3 mañanas por semana",
+    cada: "1 día a la semana",
+    pesajesSemana: 1,
     inicial: 83,
     bandaSemana: 0.35,
     ritmoMax: 0.35, ritmoMin: 0,
-    nota: "Aquí no perseguimos un número. En recomposición el peso se mueve poco: lo normal es que baje muy despacio, o que se quede plano mientras la ropa y los entrenos cambian. Lo que decide es la media de 7 días, nunca el dato de una mañana. Pésate en ayunas, después del baño y sin ropa.",
+    nota: "Un solo pesaje a la semana, el mismo día, en ayunas, después del baño y sin ropa. Apúntalo y olvídate. Aquí no perseguimos un número: en recomposición el peso se mueve poco, y lo normal es que baje muy despacio o que se quede plano mientras la ropa y los entrenos cambian.",
     aviso: "Si se mantiene dos semanas seguidas fuera de la banda, dímelo antes de tocar nada: casi siempre es registro incompleto o una semana rara, no el plan."
   },
 
@@ -420,10 +431,13 @@ const DEFAULT_PLAN = {
     pollo150:      ["Pollo o pavo a la plancha", "150 g", 165, 35, 0, 4, "1 pechuga mediana"],
     pollo120:      ["Pollo o pavo a la plancha", "120 g", 132, 28, 0, 3, "1 pechuga pequeña"],
     picada150:     ["Carne picada de pollo o pavo", "150 g", 165, 32, 0, 4, "1 hamburguesa grande"],
+    picada120:     ["Carne picada de pollo o pavo", "120 g", 132, 25.6, 0, 3.2, "1 hamburguesa"],
     ternera150:    ["Ternera magra", "150 g", 195, 32, 0, 7.5, "1 filete mediano"],
     cerdo150:      ["Lomo o solomillo de cerdo", "150 g", 195, 32, 0, 6.5, "3-4 medallones"],
     merluza200:    ["Merluza o pescado blanco", "200 g", 180, 36, 0, 2.7, "2 lomos"],
+    merluza150:    ["Merluza o pescado blanco", "150 g", 135, 27, 0, 2, "1 lomo grande"],
     salmon130:     ["Salmón", "130 g", 270, 26, 0, 17.5, "1 pieza"],
+    salmon100:     ["Salmón", "100 g", 208, 20, 0, 13.5, "1 pieza pequeña"],
     atun2:         ["Atún al natural", "160 g escurridos", 186, 42, 0, 1.6, "2 latas"],
     atun1:         ["Atún al natural", "80 g escurridos", 93, 21, 0, 0.8, "1 lata"],
     gambas200:     ["Gambas o langostinos cocidos", "200 g", 198, 42, 0, 2, "1 bandeja pequeña"],
@@ -457,21 +471,27 @@ const DEFAULT_PLAN = {
     pasta100:      ["Pasta en seco", "100 g", 355, 12.5, 71, 1.5, "1 plato ya cocido"],
     pasta80:       ["Pasta en seco", "80 g", 284, 10, 57, 1.2, "1 plato pequeño ya cocido"],
     pasta60:       ["Pasta en seco", "60 g", 213, 7.5, 43, 0.9, "medio plato ya cocido"],
+    patata500:     ["Patata cocida o al horno", "500 g", 430, 10, 95, 0.5, "2 patatas muy grandes"],
     patata400:     ["Patata cocida o al horno", "400 g", 344, 8, 76, 0.4, "2 patatas grandes"],
+    patata350:     ["Patata cocida o al horno", "350 g", 301, 7, 67, 0.4, "2 patatas medianas"],
     patata300:     ["Patata cocida o al horno", "300 g", 258, 6, 57, 0.3, "1 patata grande"],
     patata200:     ["Patata cocida o al horno", "200 g", 172, 4, 38, 0.2, "1 patata mediana"],
+    boniato450:    ["Boniato asado", "450 g", 387, 7.2, 90, 0.6, "2 boniatos grandes"],
+    boniato300:    ["Boniato asado", "300 g", 258, 4.8, 60, 0.4, "1 boniato grande"],
     boniato250:    ["Boniato asado", "250 g", 215, 4, 50, 0.3, "1 boniato mediano"],
     panint100:     ["Pan integral", "100 g", 245, 8.7, 40, 3.3, "1 panecillo grande"],
     panint80:      ["Pan integral", "80 g", 196, 7, 32, 2.6, "3 rebanadas"],
     panint60:      ["Pan integral", "60 g", 147, 5, 24, 2, "2 rebanadas gruesas"],
-    panmolde2:     ["Pan de molde integral", "2 rebanadas", 130, 5, 22, 2.4, ""],
+    panmolde4:     ["Pan de molde integral", "4 rebanadas", 260, 10, 44, 4.8, ""],
+    panmolde3:     ["Pan de molde integral", "3 rebanadas", 195, 7.5, 33, 3.6, ""],
     avenasabor80:  ["Copos de avena de sabores (suple)", "80 g", 304, 11, 46, 5.6, "2 cazos y medio"],
     avenasabor50:  ["Copos de avena de sabores (suple)", "50 g", 190, 7, 29, 3.5, "1 cazo y medio"],
     cremaarroz80:  ["Crema de arroz (suple)", "80 g", 304, 5.6, 67, 0.8, "2 cazos y medio"],
     cremaarroz50:  ["Crema de arroz (suple)", "50 g", 190, 3.5, 42, 0.5, "1 cazo y medio"],
     avena50:       ["Copos de avena naturales", "50 g", 190, 7, 29, 3.7, "5 cucharadas soperas"],
+    tortitas6:     ["Tortitas de maíz o de arroz", "6 unidades", 186, 4, 39, 1, ""],
+    tortitas5:     ["Tortitas de maíz o de arroz", "5 unidades", 155, 3.3, 32.5, 0.8, ""],
     tortitas3:     ["Tortitas de maíz o de arroz", "3 unidades", 93, 2, 19.5, 0.5, ""],
-    tortitas2:     ["Tortitas de maíz o de arroz", "2 unidades", 62, 1.3, 13, 0.3, ""],
     // ---- fruta ----
     platano2:      ["Plátano", "2 medianos", 214, 2.6, 50, 0.8, "2 plátanos"],
     platano:       ["Plátano", "1 mediano · 120 g", 107, 1.3, 25, 0.4, "1 plátano"],
@@ -496,7 +516,7 @@ const DEFAULT_PLAN = {
     cap_natillas:  ["Natillas proteicas de queso batido con cacao", "250 g + cacao", 159, 22, 11.5, 1.6, "1 tarrina"],
     cap_yogurnuez: ["Yogur griego con frutos secos y miel", "150 g + 20 g + 1 cucharadita", 250, 18.5, 15, 11.5, "1 yogur"],
     cap_tostada:   ["Tostada de aguacate y huevo", "80 g de pan + medio aguacate + 2 huevos", 468, 21.6, 34.4, 24.6, "2 tostadas"],
-    creatina5:     ["Creatina monohidrato (suple)", "5 g", 0, 0, 0, 0, "1 cucharadita rasa"],
+    creatina3:     ["Creatina monohidrato (suple)", "3 g", 0, 0, 0, 0, "media cucharadita"],
     // ---- verduras y ensalada · calorías despreciables ----
     ensalada:      ["Ensalada grande", "lechuga, tomate, pepino, cebolla, zanahoria", 0, 0, 0, 0, "1 bol grande"],
     tomate200:     ["Tomate natural", "200 g", 0, 0, 0, 0, "2 tomates"],
@@ -519,7 +539,8 @@ const DEFAULT_PLAN = {
 
   categorias: [
     { id:"prot", nombre:"Proteínas", icon:"🥩", ids:[
-      "pollo200","pollo150","pollo120","picada150","ternera150","cerdo150","merluza200","salmon130",
+      "pollo200","pollo150","pollo120","picada150","picada120","ternera150","cerdo150",
+      "merluza200","merluza150","salmon130","salmon100",
       "atun2","atun1","gambas200","huevos2","huevos3","huevos22","huevos32",
       "pavolonchas100","jamoncocido100","jamonserrano60","legumbre250","prot30","prot15",
       "skyr250","skyr150","quesobatido250","quesobatido125","yogurprot","yogurgriego150","yogurnat2",
@@ -527,9 +548,9 @@ const DEFAULT_PLAN = {
       "cap_avenaprot","cap_cremaprot","cap_pancakes","cap_skyrcacao","cap_natillas","cap_yogurnuez"] },
     { id:"hc", nombre:"Hidratos de carbono", icon:"🍚", ids:[
       "arroz120","arroz100","arroz80","arroz60","pasta120","pasta100","pasta80","pasta60",
-      "patata400","patata300","patata200","boniato250",
-      "panint100","panint80","panint60","panmolde2",
-      "avenasabor80","avenasabor50","cremaarroz80","cremaarroz50","avena50","tortitas3","tortitas2",
+      "patata500","patata400","patata350","patata300","patata200","boniato450","boniato300","boniato250",
+      "panint100","panint80","panint60","panmolde4","panmolde3",
+      "avenasabor80","avenasabor50","cremaarroz80","cremaarroz50","avena50","tortitas6","tortitas5","tortitas3",
       "platano2","platano","fruta300","fruta200"] },
     { id:"gra", nombre:"Grasas", icon:"🥑", ids:[
       "aguacate150","aguacate80","aove15","aove10","aove5",
@@ -539,9 +560,9 @@ const DEFAULT_PLAN = {
       ids:["ensalada","tomate200","calabacin200","champi150","judiaverde200","espinacas200",
            "esparragos150","brocoli200","pimicebolla100","tomatetrit100","cremacalab250"] },
     { id:"sup", nombre:"Suplementos", icon:"💊", ids:[
-      "prot30","prot15","avenasabor80","avenasabor50","cremaarroz80","cremaarroz50","creatina5"] }
+      "prot30","prot15","avenasabor80","avenasabor50","cremaarroz80","cremaarroz50","creatina3"] }
   ],
-  sinAporte: ["agua","aguagas","refrescozero","cafe","infusion","creatina5"],
+  sinAporte: ["agua","aguagas","refrescozero","cafe","infusion","creatina3"],
 
   /* --- LÍMITES SEMANALES --- */
   limitesSemana: [
@@ -570,40 +591,38 @@ const DEFAULT_PLAN = {
       { id:"mediamanana", nombre:"Media mañana", icon:"🥣", hora:"11:00",
         modos:[
           { id:"tazon", fam:"Dulce", nombre:"Tazón", grupos:[
-            { id:"base", nombre:"Base", tipo:"one", ops:["leche300","leche200","yogurnat2","skyr150","quesobatido250","yogurgriego150"] },
-            { id:"hc",   nombre:"Cereal", tipo:"one", ops:["cremaarroz80","avenasabor80","avena50","cremaarroz50","avenasabor50"] },
-            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200","platano2"] },
-            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["fsecos15","cremacacah15","fsecos20"] },
-            { id:"prot", nombre:"Proteína opcional", nota:"solo si te has quedado corto de proteína el día anterior", tipo:"one", ops:["prot15","prot30"] },
-            { id:"beb",  nombre:"Cafés de la mañana", tipo:"many", ops:["cortados2","cafe","agua","infusion"] }
+            { id:"base", nombre:"Base", tipo:"one", ops:["leche200","yogurgriego150","quesobatido125"] },
+            { id:"prot", nombre:"Proteína", nota:"1 cazo, siempre", tipo:"one", ops:["prot30"] },
+            { id:"hc",   nombre:"Cereal", tipo:"one", ops:["cremaarroz50","avenasabor50","avena50"] },
+            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
+            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["fsecos15","cremacacah15"] },
+            { id:"beb",  nombre:"Cafés de la mañana", tipo:"many", ops:["cortados2","cafe","infusion"] }
           ]},
           { id:"salado", fam:"Salada", nombre:"Salada", grupos:[
-            { id:"prot", nombre:"Proteína", tipo:"one", ops:["huevos22","huevos2","huevos3","pavolonchas100","jamoncocido100","atun1","pollo120"] },
-            { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["panint80","panint100","panint60","panmolde2","tortitas3"] },
-            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano2","platano","fruta200","fruta300"] },
-            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove5","aguacate150","fsecos15"] },
-            { id:"veg",  nombre:"Verdura opcional", nota:"tomate en la tostada, champiñón o pimiento en el huevo", tipo:"one", ops:["tomate200","champi150","pimicebolla100","espinacas200"] },
-            { id:"beb",  nombre:"Cafés de la mañana", tipo:"many", ops:["cortados2","cafe","agua","infusion"] }
+            { id:"prot", nombre:"Proteína", tipo:"one", ops:["huevos22","pavolonchas100","jamoncocido100","atun1","pollo120"] },
+            { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["panint100","panmolde4","tortitas6"] },
+            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
+            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","cremacacah20","fsecos20"] },
+            { id:"veg",  nombre:"Verdura", nota:"tomate en la tostada, champiñón o pimiento en el huevo", tipo:"one", ops:["tomate200","champi150","pimicebolla100","espinacas200"] },
+            { id:"beb",  nombre:"Cafés de la mañana", tipo:"many", ops:["cortados2","cafe","infusion"] }
           ]},
           { id:"batido", fam:"Dulce", nombre:"Batido", grupos:[
             { id:"combo",nombre:"Combinación", nota:"cuando sales de casa con el tiempo justo", tipo:"one", ops:["cap_cremaprot","cap_avenaprot","cap_pancakes","cap_skyrcacao"] },
-            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano2","platano","fruta300","fruta200"] },
-            { id:"hc",   nombre:"Hidrato de apoyo opcional", nota:"el batido solo se queda corto los días que entrenas", tipo:"one", ops:["tortitas3","panint60","avenasabor50","tortitas2"] },
-            { id:"gra",  nombre:"Grasa opcional", tipo:"one", ops:["cremacacah15","fsecos15","fsecos20"] },
-            { id:"beb",  nombre:"Cafés de la mañana", tipo:"many", ops:["cortados2","cafe","agua","infusion"] }
+            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
+            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["cremacacah15","fsecos15"] },
+            { id:"beb",  nombre:"Cafés de la mañana", tipo:"many", ops:["cortados2","cafe","infusion"] }
           ]}
         ],
         notas:[["Esta es tu primera comida sólida","No desayunas: los dos cortados no alimentan, solo despiertan. Desde que te levantas hasta las 11:00 el cuerpo va vacío, así que esta comida tiene que ser una comida de verdad, no un tentempié."],
-               ["Si entrenas por la mañana","Hazla justo al terminar. Es el mejor momento del día para la crema de arroz y los copos de sabores: entran rápido y no pesan."]] },
+               ["Aquí no hay nada opcional","Eliges UNA cosa de cada grupo y las coges todas. El cazo de proteína entra siempre."]] },
 
       { id:"comida", nombre:"Comida", icon:"🍽️", hora:"14:45",
         grupos:[
-          { id:"prot", nombre:"Proteína", tipo:"one", ops:["pollo150","pollo200","pollo120","picada150","ternera150","cerdo150","merluza200","salmon130","atun2","gambas200","huevos32","legumbre250"] },
-          { id:"hc",   nombre:"Hidratos", nota:"pesa el arroz y la pasta EN SECO: cocidos engañan al ojo", tipo:"one", ops:["arroz120","arroz100","pasta120","pasta100","patata400","patata300"] },
+          { id:"prot", nombre:"Proteína", tipo:"one", ops:["pollo150","picada150","ternera150","cerdo150","merluza200","salmon130","atun2","gambas200","huevos32","legumbre250"] },
+          { id:"hc",   nombre:"Hidratos", nota:"pesa el arroz y la pasta EN SECO: cocidos engañan al ojo", tipo:"one", ops:["arroz120","pasta120","patata500","boniato450"] },
           { id:"veg",  nombre:"Ensalada o verdura", nota:"dentro del plato, no de guarnición triste al lado", tipo:"one", ops:["ensalada","calabacin200","judiaverde200","brocoli200","champi150","espinacas200","esparragos150","pimicebolla100","tomatetrit100","cremacalab250"] },
-          { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove15","aove10","aguacate150","aove5"] },
-          { id:"sup",  nombre:"Creatina", nota:"5 g al día, todos los días, con la comida principal. El día que no entrenes también.", tipo:"many", ops:["creatina5"] },
-          { id:"postre",nombre:"Postre opcional", tipo:"one", ops:["yogurprot","skyr150","fruta200","cap_natillas","quesobatido125","cafe","infusion","refrescozero"] }
+          { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove15"] },
+          { id:"postre",nombre:"Postre opcional", nota:"el único opcional de todo el plan", tipo:"one", ops:["fruta200","skyr150","yogurprot","quesobatido125","cafe","infusion","refrescozero"] }
         ],
         notas:[["Es la comida grande del día","800 kcal de las 2.600. Proteína a la plancha o al horno, el hidrato a peso y la ensalada o la verdura dentro del plato."],
                ["El aceite es el que se descontrola","Una cucharada sopera son 10 g y 90 kcal. Tres chorros a ojo en la sartén pueden ser 40 g. Échalo con cuchara, no con la botella."]] },
@@ -611,39 +630,43 @@ const DEFAULT_PLAN = {
       { id:"merienda", nombre:"Merienda", icon:"🥤", hora:"18:45",
         modos:[
           { id:"post", fam:"Dulce", nombre:"Post-entreno", grupos:[
-            { id:"base", nombre:"Base", tipo:"one", ops:["leche200","agua","leche300"] },
-            { id:"prot", nombre:"Proteína", tipo:"one", ops:["prot30","prot15"] },
-            { id:"hc",   nombre:"Hidrato", nota:"la crema de arroz es la que entra mejor justo después de entrenar", tipo:"one", ops:["cremaarroz50","avenasabor50","cremaarroz80","tortitas3"] },
-            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","platano2","fruta200","fruta300"] }
+            { id:"base", nombre:"Base", tipo:"one", ops:["leche200"] },
+            { id:"prot", nombre:"Proteína", tipo:"one", ops:["prot30"] },
+            { id:"hc",   nombre:"Hidrato", nota:"la crema de arroz es la que entra mejor justo después de entrenar", tipo:"one", ops:["cremaarroz50","avenasabor50"] },
+            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
+            { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días. Aquí, que es cuando entrenas. El día que no entrenes también.", tipo:"many", ops:["creatina3"] }
           ]},
           { id:"lacteo", fam:"Dulce", nombre:"Lácteo", grupos:[
-            { id:"base", nombre:"Lácteo", tipo:"one", ops:["yogurgriego150","skyr250","skyr150","quesobatido250","yogurprot","yogurnat2"] },
-            { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["avenasabor50","avena50","tortitas3","platano2","panint60"] },
-            { id:"fruta",nombre:"Fruta opcional", tipo:"one", ops:["platano","fruta200","fruta300"] },
-            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["fsecos20","fsecos15","cremacacah15","fsecos30"] }
+            { id:"base", nombre:"Lácteo", tipo:"one", ops:["yogurgriego150","skyr250","quesobatido250","yogurprot","yogurnat2"] },
+            { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["avenasabor50","avena50","tortitas5","panint60"] },
+            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
+            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["fsecos20","cremacacah20"] },
+            { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días.", tipo:"many", ops:["creatina3"] }
           ]},
           { id:"salado", fam:"Salada", nombre:"Salada", grupos:[
             { id:"prot", nombre:"Proteína", tipo:"one", ops:["pavolonchas100","jamoncocido100","atun1","huevos2","pollo120"] },
-            { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["panint80","panint100","panint60","tortitas3","panmolde2"] },
-            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano2","platano","fruta200","fruta300"] },
-            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove5","fsecos15","fsecos20"] }
+            { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["panint80","panmolde3","tortitas5"] },
+            { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
+            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","cremacacah15"] },
+            { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días.", tipo:"many", ops:["creatina3"] }
           ]},
           { id:"capricho", fam:"Dulce", nombre:"Capricho", grupos:[
-            { id:"combo",nombre:"Combinación", tipo:"one", ops:["cap_skyrcacao","cap_yogurnuez","cap_natillas","cap_avenaprot"] },
-            { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["avenasabor50","avena50","tortitas3","platano2","panint60"] },
-            { id:"gra",  nombre:"Grasa opcional", tipo:"one", ops:["fsecos15","fsecos20","cremacacah15"] }
+            { id:"combo",nombre:"Combinación", tipo:"one", ops:["cap_skyrcacao","cap_yogurnuez","cap_natillas"] },
+            { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["avenasabor50","tortitas3","panint60"] },
+            { id:"gra",  nombre:"Grasa", tipo:"one", ops:["fsecos20","cremacacah20"] },
+            { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días.", tipo:"many", ops:["creatina3"] }
           ]}
         ],
         notas:[["La merienda depende de cuándo entrenes","Si entrenas por la tarde, esta comida va DESPUÉS: batido con crema de arroz y a cenar en un par de horas. Si entrenas por la mañana o no entrenas, cógela en la versión lácteo o salada."],
-               ["No la conviertas en el picoteo de la tarde","Son 500 kcal con nombre y apellidos. Si te la saltas, llegas a la cena con hambre de más y ahí es donde se va el déficit."]] },
+               ["La creatina va aquí","3 g, todos los días, entrenes o no. No hace falta cargar ni descansar, y la hora exacta da igual: se pone en la merienda porque es la comida que cae cerca del entreno y así no se te olvida."]] },
 
       { id:"cena", nombre:"Cena", icon:"🌙", hora:"21:45",
         grupos:[
-          { id:"prot", nombre:"Proteína", tipo:"one", ops:["merluza200","pollo150","huevos32","pollo120","picada150","salmon130","huevos22"] },
-          { id:"hc",   nombre:"Hidratos", tipo:"one", ops:["arroz80","patata400","arroz100","pasta80","pasta100","patata300","boniato250","panint80"] },
+          { id:"prot", nombre:"Proteína", tipo:"one", ops:["merluza150","pollo120","picada120","huevos22","salmon100"] },
+          { id:"hc",   nombre:"Hidratos", tipo:"one", ops:["arroz100","patata350","pasta100","panint100","boniato300"] },
           { id:"veg",  nombre:"Ensalada o verdura", tipo:"one", ops:["ensalada","calabacin200","judiaverde200","espinacas200","brocoli200","champi150","esparragos150","cremacalab250","tomate200"] },
-          { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove10","aove5","aove15"] },
-          { id:"postre",nombre:"Postre opcional", tipo:"one", ops:["skyr150","yogurprot","quesobatido125","fruta200","infusion"] }
+          { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove15"] },
+          { id:"postre",nombre:"Postre", tipo:"one", ops:["fruta200","quesobatido125","infusion"] }
         ],
         notas:[["Cenas tarde, así que cena ligero de grasa","A las 21:45 lo que mejor sienta es proteína magra, hidrato y verdura. La grasa alta a esa hora es la que te deja la digestión abierta a medianoche."],
                ["Hidratos en la cena, sí","No hay ninguna razón para quitarlos. Entrenas cuatro días y juegas al pádel: el arroz o la patata de la noche es lo que rellena el depósito para el entreno del día siguiente."]] }
@@ -810,69 +833,103 @@ const DEFAULT_PLAN = {
   /* =====================================================================
      ENTRENAMIENTO · empuje / tirón / pierna / hyrox, sin día fijo
      ===================================================================== */
+  /* --- PICTOGRAMAS DE LOS EJERCICIOS ---
+     SVG en línea, en currentColor, sin nada externo. Sirven para IDENTIFICAR
+     el ejercicio de un vistazo, no para enseñar la técnica. --- */
+  iconos: {
+    abduccion: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"32.0\" cy=\"11.0\" r=\"4.4\"/><polyline points=\"32.0,16.0 32.0,32.0\"/><polyline points=\"30.0,20.0 23.0,24.0\"/><polyline points=\"34.0,20.0 41.0,24.0\"/><line x1=\"23.0\" y1=\"34.0\" x2=\"41.0\" y2=\"34.0\" class=\"eq\"/><polyline points=\"32.0,32.0 21.0,40.0 19.0,50.0\"/><polyline points=\"32.0,32.0 43.0,40.0 45.0,50.0\"/><rect x=\"13.0\" y=\"36.0\" width=\"4.4\" height=\"13.0\" rx=\"2\" class=\"eq\"/><rect x=\"46.0\" y=\"36.0\" width=\"4.4\" height=\"13.0\" rx=\"2\" class=\"eq\"/><line x1=\"24.0\" y1=\"57.0\" x2=\"12.0\" y2=\"57.0\" class=\"fl\"/><polyline points=\"15.2,55.3 12.0,57.0 15.2,58.7\" class=\"fl\"/><line x1=\"40.0\" y1=\"57.0\" x2=\"52.0\" y2=\"57.0\" class=\"fl\"/><polyline points=\"48.8,58.7 52.0,57.0 48.8,55.3\" class=\"fl\"/></g></svg>",
+    apertura: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"29.0\" y=\"24.0\" width=\"3.5\" height=\"26.0\" rx=\"1.7\" class=\"eq\"/><rect x=\"22.0\" y=\"46.0\" width=\"18.0\" height=\"3.5\" rx=\"1.7\" class=\"eq\"/><circle cx=\"31.0\" cy=\"18.0\" r=\"4.4\"/><polyline points=\"31.0,23.0 31.0,44.0\"/><polyline points=\"29.0,27.0 16.0,26.0 12.0,34.0\"/><polyline points=\"33.0,27.0 46.0,26.0 50.0,34.0\"/><line x1=\"14.0\" y1=\"42.0\" x2=\"26.0\" y2=\"42.0\" class=\"fl\"/><polyline points=\"22.8,43.7 26.0,42.0 22.8,40.3\" class=\"fl\"/><line x1=\"50.0\" y1=\"42.0\" x2=\"38.0\" y2=\"42.0\" class=\"fl\"/><polyline points=\"41.2,40.3 38.0,42.0 41.2,43.7\" class=\"fl\"/></g></svg>",
+    banca: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8.0\" y=\"42.0\" width=\"44.0\" height=\"3.4\" rx=\"1.7\" class=\"eq\"/><line x1=\"16.0\" y1=\"45.4\" x2=\"16.0\" y2=\"54.0\" class=\"eq\"/><line x1=\"44.0\" y1=\"45.4\" x2=\"44.0\" y2=\"54.0\" class=\"eq\"/><circle cx=\"13.0\" cy=\"37.0\" r=\"4.4\"/><polyline points=\"18.0,40.0 40.0,41.0\"/><polyline points=\"23.0,40.0 25.0,30.0 27.0,20.0\"/><polyline points=\"40.0,41.0 47.0,48.0 47.0,56.0\"/><rect x=\"20.0\" y=\"16.0\" width=\"14.0\" height=\"3.6\" rx=\"1.8\" class=\"re\"/><line x1=\"27.0\" y1=\"12.0\" x2=\"27.0\" y2=\"4.0\" class=\"fl\"/><polyline points=\"28.7,7.2 27.0,4.0 25.3,7.2\" class=\"fl\"/></g></svg>",
+    burpee: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"24.0\" cy=\"15.0\" r=\"4.4\"/><polyline points=\"25.0,20.0 29.0,32.0\"/><polyline points=\"25.0,22.0 15.0,26.0\"/><polyline points=\"29.0,32.0 35.0,41.0 43.0,38.0\"/><polyline points=\"29.0,32.0 30.0,43.0 38.0,45.0\"/><line x1=\"6.0\" y1=\"54.0\" x2=\"58.0\" y2=\"54.0\" class=\"eq\"/><path d=\"M14.0,50.0 Q33.0,37.0 52.0,50.0\" class=\"fl\"/><polyline points=\"48.4,49.6 52.0,50.0 50.4,46.8\" class=\"fl\"/></g></svg>",
+    correr: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"34.0\" cy=\"12.0\" r=\"4.4\"/><polyline points=\"34.0,17.0 30.0,32.0\"/><polyline points=\"33.0,20.0 42.0,24.0 44.0,16.0\"/><polyline points=\"33.0,21.0 24.0,26.0 22.0,34.0\"/><polyline points=\"30.0,32.0 38.0,40.0 44.0,50.0\"/><polyline points=\"30.0,32.0 20.0,42.0 14.0,40.0\"/><line x1=\"6.0\" y1=\"20.0\" x2=\"18.0\" y2=\"20.0\" class=\"fl\"/><polyline points=\"14.8,21.7 18.0,20.0 14.8,18.3\" class=\"fl\"/></g></svg>",
+    crunch: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"52.0\" y1=\"6.0\" x2=\"52.0\" y2=\"26.0\" class=\"eq\"/><circle cx=\"52.0\" cy=\"6.0\" r=\"2.6\" class=\"eq\"/><line x1=\"52.0\" y1=\"8.0\" x2=\"34.0\" y2=\"14.0\" class=\"eq\"/><circle cx=\"24.0\" cy=\"24.0\" r=\"4.4\"/><polyline points=\"26.0,29.0 30.0,40.0\"/><polyline points=\"26.0,27.0 32.0,18.0 34.0,12.0\"/><polyline points=\"30.0,40.0 20.0,44.0 16.0,54.0\"/><line x1=\"10.0\" y1=\"56.0\" x2=\"54.0\" y2=\"56.0\" class=\"eq\"/><line x1=\"20.0\" y1=\"20.0\" x2=\"26.0\" y2=\"34.0\" class=\"fl\"/><polyline points=\"23.2,31.8 26.0,34.0 26.3,30.4\" class=\"fl\"/></g></svg>",
+    curl: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"24.0\" cy=\"12.0\" r=\"4.4\"/><polyline points=\"24.0,17.0 24.0,38.0\"/><polyline points=\"24.0,21.0 28.0,30.0 40.0,26.0\"/><polyline points=\"24.0,38.0 18.0,50.0 18.0,58.0\"/><polyline points=\"24.0,38.0 30.0,50.0 30.0,58.0\"/><rect x=\"40.0\" y=\"23.0\" width=\"8.0\" height=\"3.4\" rx=\"1.7\" class=\"re\"/><line x1=\"48.0\" y1=\"34.0\" x2=\"46.0\" y2=\"22.0\" class=\"fl\"/><polyline points=\"48.2,24.8 46.0,22.0 44.8,25.4\" class=\"fl\"/></g></svg>",
+    curl_fem: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6.0\" y=\"40.0\" width=\"42.0\" height=\"3.4\" rx=\"1.7\" class=\"eq\"/><line x1=\"12.0\" y1=\"43.4\" x2=\"12.0\" y2=\"54.0\" class=\"eq\"/><line x1=\"40.0\" y1=\"43.4\" x2=\"40.0\" y2=\"54.0\" class=\"eq\"/><circle cx=\"11.0\" cy=\"35.0\" r=\"4.4\"/><polyline points=\"16.0,36.0 36.0,36.0\"/><polyline points=\"19.0,37.0 19.0,44.0\"/><polyline points=\"36.0,36.0 46.0,36.0 49.0,22.0\"/><rect x=\"45.0\" y=\"17.0\" width=\"4.4\" height=\"8.0\" rx=\"2\" class=\"re\"/><line x1=\"58.0\" y1=\"36.0\" x2=\"58.0\" y2=\"22.0\" class=\"fl\"/><polyline points=\"59.7,25.2 58.0,22.0 56.3,25.2\" class=\"fl\"/></g></svg>",
+    curl_polea: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"54.0\" y1=\"52.0\" x2=\"54.0\" y2=\"24.0\" class=\"eq\"/><circle cx=\"54.0\" cy=\"52.0\" r=\"2.6\" class=\"eq\"/><line x1=\"54.0\" y1=\"50.0\" x2=\"42.0\" y2=\"30.0\" class=\"eq\"/><circle cx=\"24.0\" cy=\"12.0\" r=\"4.4\"/><polyline points=\"24.0,17.0 24.0,38.0\"/><polyline points=\"24.0,21.0 28.0,30.0 40.0,26.0\"/><polyline points=\"24.0,38.0 18.0,50.0 18.0,58.0\"/><polyline points=\"24.0,38.0 30.0,50.0 30.0,58.0\"/><rect x=\"38.0\" y=\"23.0\" width=\"10.0\" height=\"3.4\" rx=\"1.7\" class=\"re\"/><line x1=\"48.0\" y1=\"36.0\" x2=\"46.0\" y2=\"24.0\" class=\"fl\"/><polyline points=\"48.2,26.8 46.0,24.0 44.8,27.4\" class=\"fl\"/></g></svg>",
+    estirar: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"25.0\" cy=\"11.0\" r=\"4.4\"/><polyline points=\"25.0,16.0 25.0,35.0\"/><polyline points=\"25.0,35.0 23.0,47.0 23.0,56.0\"/><polyline points=\"25.0,35.0 37.0,43.0 35.0,30.0\"/><polyline points=\"27.0,19.0 33.0,26.0 35.0,30.0\"/><line x1=\"8.0\" y1=\"58.0\" x2=\"56.0\" y2=\"58.0\" class=\"eq\"/><line x1=\"48.0\" y1=\"42.0\" x2=\"48.0\" y2=\"28.0\" class=\"fl\"/><polyline points=\"49.7,31.2 48.0,28.0 46.3,31.2\" class=\"fl\"/></g></svg>",
+    ext_cuad: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"10.0\" y=\"22.0\" width=\"3.5\" height=\"24.0\" rx=\"1.7\" class=\"eq\"/><rect x=\"10.0\" y=\"42.0\" width=\"20.0\" height=\"3.5\" rx=\"1.7\" class=\"eq\"/><circle cx=\"19.0\" cy=\"16.0\" r=\"4.4\"/><polyline points=\"19.0,21.0 19.0,40.0\"/><polyline points=\"20.0,24.0 28.0,28.0\"/><polyline points=\"19.0,40.0 32.0,42.0 48.0,34.0\"/><rect x=\"46.0\" y=\"30.0\" width=\"4.0\" height=\"10.0\" rx=\"2\" class=\"re\"/><line x1=\"50.0\" y1=\"46.0\" x2=\"54.0\" y2=\"32.0\" class=\"fl\"/><polyline points=\"54.8,35.5 54.0,32.0 51.5,34.6\" class=\"fl\"/></g></svg>",
+    farmer: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"32.0\" cy=\"12.0\" r=\"4.4\"/><polyline points=\"32.0,17.0 32.0,36.0\"/><polyline points=\"30.0,20.0 24.0,34.0\"/><polyline points=\"34.0,20.0 40.0,34.0\"/><polyline points=\"32.0,36.0 26.0,48.0 24.0,56.0\"/><polyline points=\"32.0,36.0 38.0,48.0 40.0,56.0\"/><rect x=\"18.0\" y=\"34.0\" width=\"12.0\" height=\"4.0\" rx=\"2\" class=\"re\"/><rect x=\"34.0\" y=\"34.0\" width=\"12.0\" height=\"4.0\" rx=\"2\" class=\"re\"/><line x1=\"6.0\" y1=\"22.0\" x2=\"16.0\" y2=\"22.0\" class=\"fl\"/><polyline points=\"12.8,23.7 16.0,22.0 12.8,20.3\" class=\"fl\"/></g></svg>",
+    gemelo: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"32.0\" cy=\"10.0\" r=\"4.4\"/><polyline points=\"32.0,15.0 32.0,34.0\"/><polyline points=\"30.0,18.0 24.0,28.0\"/><polyline points=\"34.0,18.0 40.0,28.0\"/><polyline points=\"32.0,34.0 30.0,46.0 30.0,52.0\"/><polyline points=\"30.0,52.0 38.0,52.0\"/><line x1=\"14.0\" y1=\"56.0\" x2=\"50.0\" y2=\"56.0\" class=\"eq\"/><line x1=\"48.0\" y1=\"40.0\" x2=\"48.0\" y2=\"26.0\" class=\"fl\"/><polyline points=\"49.7,29.2 48.0,26.0 46.3,29.2\" class=\"fl\"/></g></svg>",
+    jalon_abierto: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"12.0\" y1=\"8.0\" x2=\"52.0\" y2=\"8.0\" class=\"eq\"/><line x1=\"32.0\" y1=\"8.0\" x2=\"32.0\" y2=\"3.0\" class=\"eq\"/><circle cx=\"23.0\" cy=\"27.0\" r=\"4.4\"/><polyline points=\"24.0,32.0 26.0,46.0\"/><polyline points=\"24.0,31.0 30.0,20.0 33.0,10.0\"/><polyline points=\"26.0,46.0 39.0,48.0 43.0,57.0\"/><line x1=\"16.0\" y1=\"49.0\" x2=\"34.0\" y2=\"49.0\" class=\"eq\"/><line x1=\"50.0\" y1=\"16.0\" x2=\"50.0\" y2=\"32.0\" class=\"fl\"/><polyline points=\"48.3,28.8 50.0,32.0 51.7,28.8\" class=\"fl\"/></g></svg>",
+    jalon_cerrado: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"27.0\" y1=\"8.0\" x2=\"39.0\" y2=\"8.0\" class=\"eq\"/><line x1=\"33.0\" y1=\"8.0\" x2=\"33.0\" y2=\"3.0\" class=\"eq\"/><circle cx=\"23.0\" cy=\"27.0\" r=\"4.4\"/><polyline points=\"24.0,32.0 26.0,46.0\"/><polyline points=\"24.0,31.0 29.0,20.0 31.0,10.0\"/><polyline points=\"26.0,46.0 39.0,48.0 43.0,57.0\"/><line x1=\"16.0\" y1=\"49.0\" x2=\"34.0\" y2=\"49.0\" class=\"eq\"/><line x1=\"50.0\" y1=\"16.0\" x2=\"50.0\" y2=\"32.0\" class=\"fl\"/><polyline points=\"48.3,28.8 50.0,32.0 51.7,28.8\" class=\"fl\"/></g></svg>",
+    lateral: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"32.0\" cy=\"12.0\" r=\"4.4\"/><polyline points=\"32.0,17.0 32.0,38.0\"/><polyline points=\"30.0,20.0 18.0,22.0 10.0,18.0\"/><polyline points=\"34.0,20.0 46.0,22.0 54.0,18.0\"/><polyline points=\"32.0,38.0 26.0,50.0 26.0,58.0\"/><polyline points=\"32.0,38.0 38.0,50.0 38.0,58.0\"/><line x1=\"10.0\" y1=\"30.0\" x2=\"8.0\" y2=\"15.0\" class=\"fl\"/><polyline points=\"10.1,17.9 8.0,15.0 6.7,18.4\" class=\"fl\"/><line x1=\"54.0\" y1=\"30.0\" x2=\"56.0\" y2=\"15.0\" class=\"fl\"/><polyline points=\"57.3,18.4 56.0,15.0 53.9,17.9\" class=\"fl\"/></g></svg>",
+    prensa: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"6.0\" y1=\"56.0\" x2=\"58.0\" y2=\"56.0\" class=\"eq\"/><polyline points=\"8.0,52.0 8.0,31.0 20.0,27.0\" class=\"eq\"/><line x1=\"8.0\" y1=\"52.0\" x2=\"27.0\" y2=\"50.0\" class=\"eq\"/><circle cx=\"14.0\" cy=\"25.0\" r=\"4.4\"/><polyline points=\"17.0,29.0 27.0,44.0\"/><polyline points=\"18.0,31.0 27.0,35.0\"/><polyline points=\"27.0,44.0 38.0,32.0 48.0,21.0\"/><polyline points=\"43.0,15.0 55.0,27.0\" class=\"pt\"/><line x1=\"50.0\" y1=\"32.0\" x2=\"58.0\" y2=\"24.0\" class=\"fl\"/><polyline points=\"57.0,27.5 58.0,24.0 54.5,25.0\" class=\"fl\"/></g></svg>",
+    press_horiz: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"10.0\" y=\"26.0\" width=\"3.5\" height=\"26.0\" rx=\"1.7\" class=\"eq\"/><rect x=\"10.0\" y=\"46.0\" width=\"20.0\" height=\"3.5\" rx=\"1.7\" class=\"eq\"/><circle cx=\"19.0\" cy=\"20.0\" r=\"4.4\"/><polyline points=\"19.0,25.0 19.0,44.0\"/><polyline points=\"20.0,28.0 30.0,30.0 40.0,27.0\"/><polyline points=\"19.0,44.0 32.0,46.0 34.0,56.0\"/><rect x=\"40.0\" y=\"22.0\" width=\"3.5\" height=\"12.0\" rx=\"1.7\" class=\"re\"/><line x1=\"48.0\" y1=\"28.0\" x2=\"58.0\" y2=\"28.0\" class=\"fl\"/><polyline points=\"54.8,29.7 58.0,28.0 54.8,26.3\" class=\"fl\"/></g></svg>",
+    press_militar: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"20.0\" y=\"30.0\" width=\"3.5\" height=\"22.0\" rx=\"1.7\" class=\"eq\"/><rect x=\"20.0\" y=\"48.0\" width=\"18.0\" height=\"3.5\" rx=\"1.7\" class=\"eq\"/><circle cx=\"30.0\" cy=\"24.0\" r=\"4.4\"/><polyline points=\"30.0,29.0 30.0,46.0\"/><polyline points=\"28.0,32.0 20.0,24.0 21.0,15.0\"/><polyline points=\"32.0,32.0 40.0,24.0 39.0,15.0\"/><rect x=\"17.0\" y=\"11.0\" width=\"8.0\" height=\"3.4\" rx=\"1.7\" class=\"re\"/><rect x=\"35.0\" y=\"11.0\" width=\"8.0\" height=\"3.4\" rx=\"1.7\" class=\"re\"/><line x1=\"30.0\" y1=\"12.0\" x2=\"30.0\" y2=\"4.0\" class=\"fl\"/><polyline points=\"31.7,7.2 30.0,4.0 28.3,7.2\" class=\"fl\"/></g></svg>",
+    remo_erg: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"6.0\" y1=\"44.0\" x2=\"56.0\" y2=\"44.0\" class=\"eq\"/><circle cx=\"22.0\" cy=\"18.0\" r=\"4.4\"/><polyline points=\"23.0,23.0 24.0,38.0\"/><polyline points=\"23.0,25.0 34.0,28.0 42.0,26.0\"/><polyline points=\"24.0,38.0 36.0,42.0 46.0,36.0\"/><rect x=\"42.0\" y=\"22.0\" width=\"3.5\" height=\"9.0\" rx=\"1.7\" class=\"re\"/><line x1=\"40.0\" y1=\"34.0\" x2=\"26.0\" y2=\"34.0\" class=\"fl\"/><polyline points=\"29.2,32.3 26.0,34.0 29.2,35.7\" class=\"fl\"/></g></svg>",
+    remo_sentado: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"6.0\" y1=\"47.0\" x2=\"34.0\" y2=\"47.0\" class=\"eq\"/><rect x=\"52.0\" y=\"34.0\" width=\"4.0\" height=\"16.0\" rx=\"2\" class=\"eq\"/><circle cx=\"17.0\" cy=\"19.0\" r=\"4.4\"/><polyline points=\"18.0,24.0 21.0,41.0\"/><polyline points=\"19.0,27.0 33.0,29.0 43.0,28.0\"/><polyline points=\"21.0,41.0 37.0,44.0 50.0,40.0\"/><rect x=\"43.0\" y=\"24.0\" width=\"3.4\" height=\"10.0\" rx=\"1.7\" class=\"re\"/><line x1=\"39.0\" y1=\"36.0\" x2=\"25.0\" y2=\"36.0\" class=\"fl\"/><polyline points=\"28.2,34.3 25.0,36.0 28.2,37.7\" class=\"fl\"/></g></svg>",
+    rumano: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"24.0\" cy=\"14.0\" r=\"4.4\"/><polyline points=\"26.0,18.0 36.0,30.0\"/><polyline points=\"30.0,22.0 30.0,38.0\"/><polyline points=\"36.0,30.0 38.0,44.0 36.0,58.0\"/><rect x=\"24.0\" y=\"38.0\" width=\"12.0\" height=\"3.6\" rx=\"1.8\" class=\"re\"/><line x1=\"48.0\" y1=\"20.0\" x2=\"48.0\" y2=\"34.0\" class=\"fl\"/><polyline points=\"46.3,30.8 48.0,34.0 49.7,30.8\" class=\"fl\"/></g></svg>",
+    ski: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"50.0\" y1=\"4.0\" x2=\"50.0\" y2=\"52.0\" class=\"eq\"/><circle cx=\"50.0\" cy=\"8.0\" r=\"2.6\" class=\"eq\"/><line x1=\"50.0\" y1=\"8.0\" x2=\"36.0\" y2=\"14.0\" class=\"eq\"/><circle cx=\"24.0\" cy=\"16.0\" r=\"4.4\"/><polyline points=\"25.0,21.0 26.0,36.0\"/><polyline points=\"25.0,22.0 32.0,16.0 36.0,12.0\"/><polyline points=\"26.0,36.0 20.0,48.0 20.0,56.0\"/><polyline points=\"26.0,36.0 32.0,48.0 32.0,56.0\"/><line x1=\"40.0\" y1=\"18.0\" x2=\"40.0\" y2=\"34.0\" class=\"fl\"/><polyline points=\"38.3,30.8 40.0,34.0 41.7,30.8\" class=\"fl\"/></g></svg>",
+    triceps: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"52.0\" y1=\"6.0\" x2=\"52.0\" y2=\"40.0\" class=\"eq\"/><circle cx=\"52.0\" cy=\"6.0\" r=\"2.6\" class=\"eq\"/><line x1=\"52.0\" y1=\"8.0\" x2=\"40.0\" y2=\"20.0\" class=\"eq\"/><circle cx=\"22.0\" cy=\"14.0\" r=\"4.4\"/><polyline points=\"22.0,19.0 24.0,40.0\"/><polyline points=\"23.0,22.0 34.0,24.0 38.0,34.0\"/><polyline points=\"24.0,40.0 18.0,50.0 18.0,58.0\"/><polyline points=\"24.0,40.0 32.0,50.0 32.0,58.0\"/><line x1=\"42.0\" y1=\"24.0\" x2=\"44.0\" y2=\"38.0\" class=\"fl\"/><polyline points=\"41.8,35.1 44.0,38.0 45.3,34.6\" class=\"fl\"/></g></svg>",
+    trineo_arrastre: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"48.0\" cy=\"16.0\" r=\"4.4\"/><polyline points=\"46.0,21.0 42.0,34.0\"/><polyline points=\"46.0,23.0 36.0,26.0\"/><polyline points=\"42.0,34.0 46.0,46.0 52.0,54.0\"/><polyline points=\"42.0,34.0 34.0,44.0 30.0,54.0\"/><line x1=\"34.0\" y1=\"27.0\" x2=\"16.0\" y2=\"40.0\" class=\"eq\"/><rect x=\"6.0\" y=\"40.0\" width=\"14.0\" height=\"5.0\" rx=\"2\" class=\"re\"/><line x1=\"4.0\" y1=\"48.0\" x2=\"24.0\" y2=\"48.0\" class=\"eq\"/><line x1=\"6.0\" y1=\"56.0\" x2=\"58.0\" y2=\"56.0\" class=\"eq\"/><line x1=\"24.0\" y1=\"16.0\" x2=\"12.0\" y2=\"16.0\" class=\"fl\"/><polyline points=\"15.2,14.3 12.0,16.0 15.2,17.7\" class=\"fl\"/></g></svg>",
+    trineo_empuje: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"16.0\" cy=\"16.0\" r=\"4.4\"/><polyline points=\"18.0,21.0 22.0,34.0\"/><polyline points=\"19.0,23.0 30.0,24.0\"/><polyline points=\"22.0,34.0 16.0,46.0 10.0,54.0\"/><polyline points=\"22.0,34.0 30.0,44.0 34.0,54.0\"/><polyline points=\"32.0,18.0 32.0,46.0 52.0,46.0\" class=\"eq\"/><rect x=\"36.0\" y=\"22.0\" width=\"14.0\" height=\"5.0\" rx=\"2\" class=\"re\"/><line x1=\"10.0\" y1=\"56.0\" x2=\"58.0\" y2=\"56.0\" class=\"eq\"/><line x1=\"44.0\" y1=\"14.0\" x2=\"56.0\" y2=\"14.0\" class=\"fl\"/><polyline points=\"52.8,15.7 56.0,14.0 52.8,12.3\" class=\"fl\"/></g></svg>",
+    wallball: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"58.0\" y1=\"4.0\" x2=\"58.0\" y2=\"56.0\" class=\"eq\"/><line x1=\"46.0\" y1=\"9.0\" x2=\"58.0\" y2=\"9.0\" class=\"eq\"/><circle cx=\"17.0\" cy=\"25.0\" r=\"4.4\"/><polyline points=\"18.0,30.0 19.0,42.0\"/><polyline points=\"19.0,31.0 28.0,26.0 33.0,21.0\"/><polyline points=\"19.0,42.0 13.0,50.0 13.0,56.0\"/><polyline points=\"19.0,42.0 27.0,50.0 27.0,56.0\"/><circle cx=\"38.0\" cy=\"17.0\" r=\"5.2\" class=\"re\"/><line x1=\"44.0\" y1=\"13.0\" x2=\"53.0\" y2=\"8.0\" class=\"fl\"/><polyline points=\"51.1,11.0 53.0,8.0 49.4,8.0\" class=\"fl\"/></g></svg>",
+    zancada: "<svg viewBox=\"0 0 64 64\" class=\"ejsvg\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"15.0\" y=\"17.0\" width=\"22.0\" height=\"6.0\" rx=\"3\" class=\"re\"/><circle cx=\"26.0\" cy=\"9.0\" r=\"4.4\"/><polyline points=\"26.0,14.0 28.0,32.0\"/><polyline points=\"24.0,20.0 19.0,20.0\"/><polyline points=\"30.0,20.0 35.0,20.0\"/><polyline points=\"28.0,32.0 43.0,38.0 45.0,54.0\"/><polyline points=\"28.0,32.0 19.0,44.0 13.0,54.0\"/><line x1=\"6.0\" y1=\"56.0\" x2=\"58.0\" y2=\"56.0\" class=\"eq\"/><line x1=\"50.0\" y1=\"22.0\" x2=\"58.0\" y2=\"22.0\" class=\"fl\"/><polyline points=\"54.8,23.7 58.0,22.0 54.8,20.3\" class=\"fl\"/></g></svg>"
+  },
+
   entrenos: [
     { id:"empuje", nombre:"Empuje", dia:"Pecho, hombro y tríceps · 18 series", ejercicios:[
-      { n:"Press banca en máquina", reps:"8-10 / 12 / 12", series:3, rest:150, pesoRef:50,
+      { n:"Press banca en máquina", icon:"banca", reps:"8-10 / 12 / 12", series:3, rest:180, pesoRef:50,
         spec:"TOP SET la 1.ª serie a 8-10 rep. Las dos siguientes, BACK OFF: mismo ejercicio con un 15 % menos de peso y 12 rep. Aquí no hay drop." },
-      { n:"Press horizontal en máquina", reps:"10-12", series:3, rest:120, pesoRef:50,
+      { n:"Press horizontal en máquina", icon:"press_horiz", reps:"10-12", series:3, rest:180, pesoRef:50,
         spec:"Tres series normales, dejando 1 repetición en el depósito en las dos primeras." },
-      { n:"Apertura de pecho en máquina", reps:"10-12 + drop", series:3, rest:90, pesoRef:25,
+      { n:"Apertura de pecho en máquina", icon:"apertura", reps:"10-12 + drop", series:3, rest:180, pesoRef:25,
         spec:"DROP SET al acabar la 3.ª serie: baja a unos 15 kg SIN descansar y sigue hasta que la técnica se ensucie. Es el último de pecho: aquí sí vas al límite." },
-      { n:"Press militar con mancuernas", reps:"10-12", series:3, rest:120, pesoRef:15,
+      { n:"Press militar con mancuernas", icon:"press_militar", reps:"10-12", series:3, rest:180, pesoRef:15,
         spec:"15 + 15 kg de partida. Sentado con respaldo si la espalda se arquea." },
-      { n:"Elevaciones laterales en polea", reps:"12-15 + drop", series:3, rest:90, pesoRef:10,
+      { n:"Elevaciones laterales en polea", icon:"lateral", reps:"12-15 + drop", series:3, rest:180, pesoRef:10,
         spec:"DROP SET al acabar la 3.ª: baja a unos 6 kg y sigue. Si el día siguiente llegas muy tocado, este es el primer drop que se quita." },
-      { n:"Extensión de tríceps en polea con correas", reps:"10-12 + drop", series:3, rest:90, pesoRef:35,
+      { n:"Extensión de tríceps en polea con correas", icon:"triceps", reps:"10-12 + drop", series:3, rest:180, pesoRef:35,
         spec:"DROP SET al acabar la 3.ª: baja a unos 20 kg y sigue. Esto ya lo hacías tú: solo tiene nombre ahora." }
     ]},
     { id:"tiron", nombre:"Tirón", dia:"Espalda, bíceps y abdomen · 18 series", ejercicios:[
-      { n:"Remo sentado en polea", reps:"8-10 / 12 / 12", series:3, rest:150, pesoRef:60,
+      { n:"Remo sentado en polea", icon:"remo_sentado", reps:"8-10 / 12 / 12", series:3, rest:180, pesoRef:60,
         spec:"TOP SET la 1.ª a 8-10 rep. Las dos siguientes, BACK OFF con un 15 % menos y 12 rep. El peso del top set es el número que perseguimos cada semana." },
-      { n:"Jalón al pecho agarre abierto", reps:"8-10", series:3, rest:120, pesoRef:60,
+      { n:"Jalón al pecho agarre abierto", icon:"jalon_abierto", reps:"8-10", series:3, rest:180, pesoRef:60,
         spec:"Tres series normales. Tira con el codo hacia el bolsillo, no con la mano." },
-      { n:"Jalón al pecho agarre cerrado (o dominadas asistidas)", reps:"10-12 + drop", series:3, rest:90, pesoRef:55,
+      { n:"Jalón al pecho agarre cerrado (o dominadas asistidas)", icon:"jalon_cerrado", reps:"10-12 + drop", series:3, rest:180, pesoRef:55,
         spec:"DROP SET al acabar la 3.ª: baja a unos 35 kg y sigue. Si lo haces como DOMINADAS ASISTIDAS, sin drop: subir la asistencia rompe el patrón. Cada mes que baje la asistencia es progreso que se ve." },
-      { n:"Curl de bíceps con correas", reps:"10-12", series:3, rest:90, pesoRef:30,
+      { n:"Curl de bíceps con correas", icon:"curl", reps:"10-12", series:3, rest:180, pesoRef:30,
         spec:"Tres series normales, sin balanceo de tronco." },
-      { n:"Curl de bíceps en polea con barra", reps:"10-12 + drop", series:3, rest:90, pesoRef:35,
+      { n:"Curl de bíceps en polea con barra", icon:"curl_polea", reps:"10-12 + drop", series:3, rest:180, pesoRef:35,
         spec:"DROP SET al acabar la 3.ª: baja a unos 22,5 kg y sigue. Es el último de bíceps del día." },
-      { n:"Crunch abdominal en polea con correas", reps:"15", series:3, rest:60, pesoRef:30,
+      { n:"Crunch abdominal en polea con correas", icon:"crunch", reps:"15", series:3, rest:180, pesoRef:30,
         spec:"Sin técnicas. Enrolla la columna, no tires con la cadera." }
     ]},
     { id:"pierna", nombre:"Pierna", dia:"Cuádriceps, isquio, glúteo y gemelo · 18 series", ejercicios:[
-      { n:"Prensa", reps:"8-10 / 12 / 12", series:3, rest:150, pesoRef:75,
+      { n:"Prensa", icon:"prensa", reps:"8-10 / 12 / 12", series:3, rest:180, pesoRef:75,
         spec:"TOP SET la 1.ª a 8-10 rep. Las dos siguientes, BACK OFF con un 15 % menos y 12 rep." },
-      { n:"Peso muerto rumano (mancuernas o barra)", reps:"8-10", series:3, rest:150, pesoRef:20,
+      { n:"Peso muerto rumano (mancuernas o barra)", icon:"rumano", reps:"8-10", series:3, rest:180, pesoRef:20,
         spec:"NUEVO · empieza con 20 + 20 kg. SIN back-off y SIN drop, a propósito: es el único ejercicio del plan donde la técnica se rompe con la fatiga y se paga con la espalda. Busca sensación de estiramiento en el isquio, no peso." },
-      { n:"Extensión de cuádriceps", reps:"10-12 + drop", series:3, rest:90, pesoRef:50,
+      { n:"Extensión de cuádriceps", icon:"ext_cuad", reps:"10-12 + drop", series:3, rest:180, pesoRef:50,
         spec:"DROP SET al acabar la 3.ª: baja a unos 32,5 kg y sigue." },
-      { n:"Curl femoral tumbado en máquina", reps:"8-10", series:3, rest:120, pesoRef:50,
+      { n:"Curl femoral tumbado en máquina", icon:"curl_fem", reps:"8-10", series:3, rest:180, pesoRef:50,
         spec:"Series normales. Con el rumano delante, el isquio ya llega con trabajo encima: no hace falta drop." },
-      { n:"Elevación de gemelos", reps:"12-15 + drop", series:3, rest:60, pesoRef:"",
+      { n:"Elevación de gemelos", icon:"gemelo", reps:"12-15 + drop", series:3, rest:180, pesoRef:"",
         spec:"NUEVO · el peso lo fijas el primer día en la máquina. DROP SET al acabar la 3.ª. Con el pádel es el músculo que frena cada cambio de dirección: cero series antes, tres ahora." },
-      { n:"Abducción de cadera en máquina", reps:"15", series:3, rest:60, pesoRef:"",
+      { n:"Abducción de cadera en máquina", icon:"abduccion", reps:"15", series:3, rest:180, pesoRef:"",
         spec:"NUEVO · glúteo medio, el que estabiliza los desplazamientos laterales del pádel. Sin hacerse el héroe con el peso." }
     ]},
     { id:"hyrox", nombre:"Hyrox", dia:"Principiante · 40-45 min · carreras de 200 m", ejercicios:[
-      { n:"Calentamiento", reps:"400 m + movilidad", series:1, rest:0, metro:true,
+      { n:"Calentamiento", icon:"correr", reps:"400 m + movilidad", series:1, rest:0, metro:true,
         spec:"400 m trotando suave, movilidad de tobillo y cadera, 10 sentadillas sin peso, 10 balanceos de brazo y 5 burpees lentos. 8 minutos." },
-      { n:"200 m + SkiErg", reps:"250 m", series:1, rest:0, metro:true,
+      { n:"200 m + SkiErg", icon:"ski", reps:"250 m", series:1, rest:0, metro:true,
         spec:"Estación 1 · enlazado. Sal MÁS LENTO de lo que te apetezca: el error clásico es fundirse en los primeros 200 m." },
-      { n:"200 m + Empuje de trineo", reps:"25 m", series:1, rest:0, metro:true, pesoRef:30,
+      { n:"200 m + Empuje de trineo", icon:"trineo_empuje", reps:"25 m", series:1, rest:0, metro:true, pesoRef:30,
         spec:"Estación 2 · enlazado · trineo + 30 kg. Brazos rígidos y empujar con la pierna, no con el pecho." },
-      { n:"200 m + Arrastre de trineo", reps:"25 m", series:1, rest:0, metro:true, pesoRef:20,
+      { n:"200 m + Arrastre de trineo", icon:"trineo_arrastre", reps:"25 m", series:1, rest:0, metro:true, pesoRef:20,
         spec:"Estación 3 · enlazado · trineo + 20 kg. Sentado hacia atrás, tirando con todo el cuerpo." },
-      { n:"200 m + Burpee broad jump", reps:"20 m", series:1, rest:0, metro:true,
+      { n:"200 m + Burpee broad jump", icon:"burpee", reps:"20 m", series:1, rest:0, metro:true,
         spec:"Estación 4 · enlazado. Salto corto y constante; no busques distancia por salto." },
-      { n:"200 m + Remo", reps:"250 m", series:1, rest:0, metro:true,
+      { n:"200 m + Remo", icon:"remo_erg", reps:"250 m", series:1, rest:0, metro:true,
         spec:"Estación 5 · enlazado. Pierna, cadera, brazo al tirar; y al revés al volver." },
-      { n:"200 m + Farmer carry", reps:"100 m", series:1, rest:0, metro:true, pesoRef:16,
+      { n:"200 m + Farmer carry", icon:"farmer", reps:"100 m", series:1, rest:0, metro:true, pesoRef:16,
         spec:"Estación 6 · enlazado · 2 × 16 kg. Hombros atrás y pasos cortos." },
-      { n:"200 m + Zancadas con sandbag", reps:"50 m", series:1, rest:0, metro:true, pesoRef:10,
+      { n:"200 m + Zancadas con sandbag", icon:"zancada", reps:"50 m", series:1, rest:0, metro:true, pesoRef:10,
         spec:"Estación 7 · enlazado · sandbag de 10 kg. Rodilla de atrás al suelo, sin rebotar." },
-      { n:"200 m + Wall balls", reps:"30 repeticiones", series:1, rest:0, pesoRef:6,
+      { n:"200 m + Wall balls", icon:"wallball", reps:"30 repeticiones", series:1, rest:0, pesoRef:6,
         spec:"Estación 8 · balón de 6 kg. Sentadilla completa y soltar el balón arriba, no lanzarlo con el brazo." },
-      { n:"Vuelta a la calma", reps:"5 min", series:1, rest:0, metro:true,
+      { n:"Vuelta a la calma", icon:"estirar", reps:"5 min", series:1, rest:0, metro:true,
         spec:"Andar y estirar cuádriceps, isquios, gemelo y pectoral. Y APUNTA EL TIEMPO TOTAL DEL CIRCUITO en la nota del día: es la única métrica que importa este día." }
     ]}
   ],
@@ -896,7 +953,8 @@ const DEFAULT_PLAN = {
   /* --- REGLAS Y EQUIVALENCIAS --- */
   reglas: {
     equivalencias: [
-      "El objetivo del día son 2.600 kcal con 145 g de proteína, 325 g de hidratos y 80 g de grasa. No hace falta clavarlo: si acabas la semana con la media cerca, está bien hecho.",
+      "El objetivo del día son 2.600 kcal con 150 g de proteína, 320 g de hidratos y 78 g de grasa. No hace falta clavarlo: si acabas la semana con la media cerca, está bien hecho.",
+      "Cada grupo tiene una sola ración por alimento: la que está puesta es LA que toca. No hay versión grande y versión pequeña del mismo plato para elegir.",
       "El arroz y la pasta se pesan EN SECO. 100 g en seco son un plato normal ya cocido; cocidos pesan casi el triple y el ojo se equivoca siempre por arriba.",
       "1 cazo de proteína ≈ 30 g · 1 cazo y medio de copos de sabores o de crema de arroz ≈ 50 g · 2 cazos y medio ≈ 80 g. El cacito viene dentro del bote.",
       "1 cucharada sopera de aceite ≈ 10 g y 90 kcal · 1 cucharadita ≈ 5 g. Échalo con cuchara: es el alimento que más se descontrola a ojo de todo el plan.",
@@ -911,8 +969,10 @@ const DEFAULT_PLAN = {
   },
 
   recordatorios: [
-    "El objetivo de este bloque no es que baje el peso, es que SUBAN LOS ENTRENOS. Si la fuerza sube con el peso plano o bajando muy despacio, la composición está cambiando. Eso es exactamente lo que buscamos.",
+    "El objetivo de este bloque no es que el peso baje: que baje muy ligeramente o incluso que se mantenga está bien. Lo que buscamos es ir mejorando la composición y, sobre todo, que SUBAN LOS ENTRENOS. Si la fuerza sube con el peso plano o bajando muy despacio, la composición está cambiando. Eso es exactamente lo que buscamos.",
     "Doble progresión: cuando completes las series en el tope del rango y las dos últimas repeticiones te salgan limpias, sube el peso lo mínimo que permita la máquina y vuelve al número bajo del rango.",
+    "3 MINUTOS de descanso entre serie y serie en los tres días de pesas, en todos los ejercicios. Con ese descanso la segunda y la tercera serie salen con el mismo peso que la primera, que es de donde viene la progresión. El cronómetro de cada ejercicio ya está puesto en 3:00.",
+    "Cada ejercicio lleva un dibujo al lado para que lo identifiques en el gimnasio de un vistazo. Es para reconocer la máquina y el movimiento, no para aprender la técnica: si dudas de cómo se hace uno, pregúntame antes de cargarlo.",
     "Top set y back-off van SOLO en el primer ejercicio de cada día: press banca, remo sentado y prensa. Los back-off van anclados al top set, siempre un 15 % menos: si el top set sube, ellos suben. No los progreses por separado.",
     "Drop set SOLO en el último ejercicio de cada grupo muscular, y solo en máquina o polea. Una bajada del 30-35 %, sin descanso, hasta que la técnica se ensucie.",
     "Los drop sets NO se progresan ni se apuntan como marca. El número que perseguimos es el de las series de trabajo. Si intentas subir peso en los drops, solo llegas peor al entreno siguiente: el drop es el postre, no el plato.",
@@ -921,10 +981,11 @@ const DEFAULT_PLAN = {
     "El pádel no cuenta como entreno, pero cansa. Si el partido cae el día antes de pierna, cambia el orden.",
     "En el hyrox apunta el TIEMPO TOTAL del circuito en la nota del día. Cada semana cambias una sola cosa: o bajas el tiempo con los mismos volúmenes, o subes un volumen y aceptas que el tiempo suba. Nunca las dos. Por debajo de 25 minutos subimos las carreras a 400 m.",
     "Los 10.000 pasos van APARTE del entreno. No los cuentes dentro ni te los descuentes el día que entrenas fuerte: son la base sobre la que se apoya el déficit.",
-    "Creatina: 5 g todos los días, con la comida. Da igual si entrenas o no, y da igual la hora. No hace falta cargar ni descansar.",
-    "Pésate 3 mañanas por semana en ayunas y apunta el dato sin pensarlo. Aquí no hay número al que llegar: lo que se mira es la media de 7 días y que se mueva poco.",
+    "Creatina: 3 g todos los días, en la merienda. Da igual si entrenas o no. No hace falta cargar ni descansar, y la hora exacta no cambia nada: va en la merienda porque es la comida que cae cerca del entreno y así no se te olvida.",
+    "Pésate UN SOLO DÍA a la semana, siempre el mismo, en ayunas. Apúntalo y olvídate. Aquí no hay número al que llegar: lo que se mira es que de una semana a otra se mueva poco mientras los entrenos suben.",
     "Si has comido uno de los platos ya montados, añádelo en «Platos y guisos ya montados» y NO rellenes esa comida arriba: las cantidades ya están cuadradas.",
-    "Agua: entre 2,5 y 3 litros. Con 4 entrenos, un partido de pádel y creatina, es más de lo que crees."
+    "En este plan NO hay opcionales: en cada comida eliges una cosa de cada grupo y las coges todas. El único opcional es el postre de la comida.",
+    "Agua: entre 2,5 y 3 litros. Con 4 entrenos, un partido de pádel y creatina, es más de lo que crees. El agua, el café solo y las infusiones no se apuntan: son libres y no aparecen como opción en ninguna comida."
   ]
 };
 
@@ -1034,6 +1095,8 @@ function pesoMeta(){
 /* recomposición: hay tendencia que mirar pero NO hay cifra a la que llegar.
    La báscula deja de ser una meta y pasa a ser un control de estabilidad. */
 function esRecomp(){ return !!(S.plan.peso && S.plan.peso.vista === "recomp"); }
+/* con un solo pesaje semanal, hablar de "media de 7 días" engaña: es UN dato. */
+function unPesajeSemana(){ return !!(S.plan.peso && S.plan.peso.pesajesSemana === 1); }
 
 /* ---------- episodios de ansiedad (solo si el plan declara el módulo) ---------- */
 function episodios(iso){
@@ -1413,7 +1476,7 @@ function renderHoy(){
         <button class="chipbtn" id="btnPesoOk">Guardar</button>
       </div>
       <div class="statgrid" style="margin-top:12px">
-        <div class="stat"><b>${m0!=null?m0.toFixed(1).replace(".",",")+" kg":"—"}</b><span>media de 7 días</span></div>
+        <div class="stat"><b>${m0!=null?m0.toFixed(1).replace(".",",")+" kg":"—"}</b><span>${unPesajeSemana()?"peso de la semana":"media de 7 días"}</span></div>
         <div class="stat"><b>${ref!=null?(ref-P.inicial>=0?"+":"−")+Math.abs(ref-P.inicial).toFixed(1).replace(".",","):"—"} kg</b><span>desde ${String(P.inicial).replace(".",",")} kg</span></div>
         <div class="stat"><b>${rt!=null?(rt>=0?"+":"−")+Math.abs(rt).toFixed(2).replace(".",","):"—"}</b><span>kg/semana</span></div>
       </div>`;
@@ -1563,8 +1626,11 @@ function renderHoy(){
         if(gr.tipo === "many") return nom + (gr.ops.length === 1
           ? ` <span class="el uno">siempre</span>`
           : ` <span class="el var">las que quieras</span>`);
-        return nom + (opc ? ` <span class="el opc">opcional</span>`
-                          : ` <span class="el uno">elige 1</span>`);
+        if(opc) return nom + ` <span class="el opc">opcional</span>`;
+        /* un grupo obligatorio con una sola opción no es una elección: es fijo */
+        return nom + (gr.ops.length === 1
+          ? ` <span class="el uno">siempre</span>`
+          : ` <span class="el uno">elige 1</span>`);
       })()}${gr.nota?` <em>· ${esc(gr.nota)}</em>`:""}</h3>`;
       gr.ops.forEach(fid=>{
         const f = food(fid); if(!f) return;
@@ -1832,7 +1898,9 @@ function renderEntreno(){
     const ult = ultimaSesion(iso, did, i);
     const sets = ses[i]||[];
     h += `<div class="ex">
-      <div class="exh"><div class="num">${i+1}</div><div class="exn">${esc(ex.n)}</div></div>
+      <div class="exh"><div class="num">${i+1}</div>${
+        (ex.icon && S.plan.iconos && S.plan.iconos[ex.icon]) ? S.plan.iconos[ex.icon] : ""
+      }<div class="exn">${esc(ex.n)}</div></div>
       <div class="exi"><b>${esc(ex.reps)}</b> · ${ex.series} ${ex.series>1?"series":"serie"}${ex.rest?` · descanso ${ex.rest>=60?(ex.rest/60).toString().replace(".5","½")+"'":ex.rest+"''"}`:" · enlazado"}</div>
       ${ex.spec?`<div class="spec">${esc(ex.spec)}</div>`:""}
       <table class="sets"><thead><tr><th></th><th>${ex.metro?"Lastre":"Peso"} kg</th><th>${ex.metro?"Metros":"Reps"}</th><th>RIR</th></tr></thead><tbody>`;
@@ -1953,7 +2021,7 @@ function renderProgreso(){
     }
     const def = esDeficit(), meta = pesoMeta(), rec = esRecomp();
     const banda = P.bandaSemana != null ? P.bandaSemana : 0.35;
-    h += `<div class="card"><h2>⚖️ Peso · medias semanales <span class="rt">${
+    h += `<div class="card"><h2>⚖️ Peso · ${unPesajeSemana()?"semana a semana":"medias semanales"} <span class="rt">${
       rec ? "±"+String(banda).replace(".",",")+" kg/semana" : (def?"objetivo":"techo")+" "+meta+" kg"}</span></h2>`;
     if(!filas.length) h += `<div class="muted">Todavía no hay pesajes. Con 2-3 por semana ya sale la media.</div>`;
     else {
@@ -2204,7 +2272,7 @@ function generarResumen(){
     L.push("*PESO*");
     const def = esDeficit(), meta = pesoMeta(), rec = esRecomp();
     const banda = P.bandaSemana != null ? P.bandaSemana : 0.35;
-    L.push(m0!=null ? `· Media de la semana: ${m0.toFixed(1).replace(".",",")} kg` : "· Sin pesajes esta semana");
+    L.push(m0!=null ? `· ${unPesajeSemana()?"Peso":"Media"} de la semana: ${m0.toFixed(1).replace(".",",")} kg` : "· Sin pesajes esta semana");
     if(rec){
       if(rt!=null) L.push(`· Ritmo: ${(rt>=0?"+":"−")}${Math.abs(rt).toFixed(2).replace(".",",")} kg/semana (banda de recomposición ±${String(banda).replace(".",",")})`);
       if(ref!=null) L.push(`· Total desde ${String(P.inicial).replace(".",",")} kg: ${(ref-P.inicial>=0?"+":"−")}${Math.abs(ref-P.inicial).toFixed(1).replace(".",",")} kg · sin cifra objetivo (recomposición)`);
