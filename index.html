@@ -381,7 +381,8 @@ nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width
 /* =====================================================================
    PLAN DE ESTEBAN — septiembre 2026
    RECOMPOSICIÓN CORPORAL con déficit ligero (2.600 kcal).
-   83 kg · 1,83 m. Un solo tipo de día: entrene o no, come lo mismo.
+   83 kg · 1,83 m · 29 años. Mantenimiento 2.934 kcal (Mifflin-St Jeor × 1,60).
+   Un solo tipo de día: entrene o no, come lo mismo.
    4 comidas + los 2 cortados de la mañana. Sin desayuno sólido.
    Plan ESTRICTO: cero grupos opcionales salvo el postre de la comida, y una
    sola ración por alimento en cada grupo.
@@ -419,10 +420,14 @@ const DEFAULT_PLAN = {
     cada: "1 día a la semana",
     pesajesSemana: 1,
     inicial: 83,
-    bandaSemana: 0.35,
-    ritmoMax: 0.35, ritmoMin: 0,
-    nota: "Un solo pesaje a la semana, el mismo día, en ayunas, después del baño y sin ropa. Apúntalo y olvídate. Aquí no perseguimos un número: en recomposición el peso se mueve poco, y lo normal es que baje muy despacio o que se quede plano mientras la ropa y los entrenos cambian.",
-    aviso: "Si se mantiene dos semanas seguidas fuera de la banda, dímelo antes de tocar nada: casi siempre es registro incompleto o una semana rara, no el plan."
+    /* El plan tiene 334 kcal de déficit: eso son ~0,30 kg/semana teóricos. Con la
+       banda en 0,35 el aviso saltaría casi todas las semanas por hacer EXACTAMENTE
+       lo previsto. 0,50 kg/semana (0,6 % del peso) es el techo real por encima del
+       cual se empieza a perder músculo: ahí es donde tiene que estar el aviso. */
+    bandaSemana: 0.5,
+    ritmoMax: 0.5, ritmoMin: 0,
+    nota: "Un solo pesaje a la semana, el mismo día, en ayunas, después del baño y sin ropa. Apúntalo y olvídate. Aquí no perseguimos un número. Lo previsible es que las primeras semanas baje entre 0,2 y 0,3 kg y que luego se vaya aplanando: eso es lo que tiene que pasar. El aviso solo salta si se mueve más de medio kilo en una semana.",
+    aviso: "Medio kilo en una semana es más de lo que toca. Si pasa dos semanas seguidas, dímelo antes de tocar nada: casi siempre es registro incompleto o una semana rara (viaje, sal, poco sueño), no el plan."
   },
 
   /* --- CATÁLOGO: [nombre, peso, kcal, prot, hc, grasa, ración de casa] --- */
@@ -952,6 +957,7 @@ const DEFAULT_PLAN = {
   reglas: {
     equivalencias: [
       "El objetivo del día son 2.600 kcal con 150 g de proteína, 320 g de hidratos y 78 g de grasa. No hace falta clavarlo: si acabas la semana con la media cerca, está bien hecho.",
+      "De dónde sale el 2.600: tu gasto de mantenimiento con 83 kg, 1,83 m y 29 años, y contando los 10.000 pasos, los 3 días de pesas, el hyrox y el pádel, son unas 2.934 kcal. Le quitamos 334, que es un 11 %. Es un déficit corto a propósito: lo justo para que la grasa baje sin que los entrenos se caigan.",
       "Cada grupo tiene una sola ración por alimento: la que está puesta es LA que toca. No hay versión grande y versión pequeña del mismo plato para elegir.",
       "El arroz y la pasta se pesan EN SECO. 100 g en seco son un plato normal ya cocido; cocidos pesan casi el triple y el ojo se equivoca siempre por arriba.",
       "1 cazo de proteína ≈ 30 g · 1 cazo y medio de copos de sabores o de crema de arroz ≈ 50 g · 2 cazos y medio ≈ 80 g. El cacito viene dentro del bote.",
@@ -981,7 +987,7 @@ const DEFAULT_PLAN = {
     "En el hyrox apunta el TIEMPO TOTAL del circuito en la nota del día. Cada semana cambias una sola cosa: o bajas el tiempo con los mismos volúmenes, o subes un volumen y aceptas que el tiempo suba. Nunca las dos. Por debajo de 25 minutos subimos las carreras a 400 m.",
     "Los 10.000 pasos van APARTE del entreno. No los cuentes dentro ni te los descuentes el día que entrenas fuerte: son la base sobre la que se apoya el déficit.",
     "Creatina: 3 g todos los días, en la merienda. Da igual si entrenas o no. No hace falta cargar ni descansar, y la hora exacta no cambia nada: va en la merienda porque es la comida que cae cerca del entreno y así no se te olvida.",
-    "Pésate UN SOLO DÍA a la semana, siempre el mismo, en ayunas. Apúntalo y olvídate. Aquí no hay número al que llegar: lo que se mira es que de una semana a otra se mueva poco mientras los entrenos suben.",
+    "Pésate UN SOLO DÍA a la semana, siempre el mismo, en ayunas. Apúntalo y olvídate. Aquí no hay número al que llegar: lo previsible es bajar 0,2-0,3 kg por semana al principio y que luego se aplane. El aviso solo salta por encima de medio kilo en una semana, que ya sería demasiado rápido.",
     "Si has comido uno de los platos ya montados, añádelo en «Platos y guisos ya montados» y NO rellenes esa comida arriba: las cantidades ya están cuadradas.",
     "En este plan NO hay opcionales: en cada comida eliges una cosa de cada grupo y las coges todas. El único opcional es el postre de la comida.",
     "Agua: entre 2,5 y 3 litros. Con 4 entrenos, un partido de pádel y creatina, es más de lo que crees. El agua, el café solo y las infusiones no se apuntan: son libres y no aparecen como opción en ninguna comida."
