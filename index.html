@@ -380,10 +380,12 @@ nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width
 
 /* =====================================================================
    PLAN DE ESTEBAN — septiembre 2026
-   RECOMPOSICIÓN CORPORAL con déficit ligero (2.600 kcal).
+   RECOMPOSICIÓN CORPORAL · 2.600 kcal hasta el 4/10/2026 · 2.000 desde el 5/10
+   (fuera la media mañana: no tenía hambre por la mañana).
    83 kg · 1,83 m · 29 años. Mantenimiento 2.934 kcal (Mifflin-St Jeor × 1,60).
    Un solo tipo de día: entrene o no, come lo mismo.
-   4 comidas + los 2 cortados de la mañana. Sin desayuno sólido.
+   Desde el 5/10: 3 comidas (comida, merienda, cena). La media mañana sigue en el
+   fichero con `hasta`, para que los días anteriores sigan sumando.
    Plan ESTRICTO: cero grupos opcionales salvo el postre de la comida, y una
    sola ración por alimento en cada grupo.
    Lleva entrenamiento propio: empuje / tirón / pierna / hyrox, sin día fijo.
@@ -395,14 +397,14 @@ nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width
 
 const DEFAULT_PLAN = {
   cliente: "Esteban",
-  version: "bloque 1 · recomposición · sep 2026",
+  version: "bloque 1 · recomposición · sin media mañana desde 5 oct",
   almacen: "esteban_app_v1",
   /* Un solo objetivo: con 4 entrenos y un partido de pádel a la semana casi no
      hay días de descanso reales, así que no tiene sentido duplicar estructuras. */
   tipoUnico: true,
   marcarEleccion: true,
   objetivos: {
-    entreno: { kcal: 2600, p: 150, hc: 320, g: 78 }
+    entreno: { kcal: 2000, p: 112, hc: 246, g: 63 }
   },
   pasosObjetivo: 10000,
 
@@ -426,7 +428,7 @@ const DEFAULT_PLAN = {
        cual se empieza a perder músculo: ahí es donde tiene que estar el aviso. */
     bandaSemana: 0.5,
     ritmoMax: 0.5, ritmoMin: 0,
-    nota: "Un solo pesaje a la semana, el mismo día, en ayunas, después del baño y sin ropa. Apúntalo y olvídate. Aquí no perseguimos un número. Lo previsible es que las primeras semanas baje entre 0,2 y 0,3 kg y que luego se vaya aplanando: eso es lo que tiene que pasar. El aviso solo salta si se mueve más de medio kilo en una semana.",
+    nota: "Un solo pesaje a la semana, el mismo día, en ayunas, después del baño y sin ropa. Apúntalo y olvídate. Aquí no perseguimos un número. Desde que quitamos la media mañana el déficit es mayor y es normal que baje más rápido que al principio. El aviso salta si se mueve más de medio kilo en una semana.",
     aviso: "Medio kilo en una semana es más de lo que toca. Si pasa dos semanas seguidas, dímelo antes de tocar nada: casi siempre es registro incompleto o una semana rara (viaje, sal, poco sueño), no el plan."
   },
 
@@ -591,7 +593,7 @@ const DEFAULT_PLAN = {
      ===================================================================== */
   dias: {
     entreno: [
-      { id:"mediamanana", nombre:"Media mañana", icon:"🥣", hora:"11:00",
+      { id:"mediamanana", nombre:"Media mañana", icon:"🥣", hora:"11:00", hasta:"2026-10-04",
         modos:[
           { id:"tazon", fam:"Dulce", nombre:"Tazón", grupos:[
             { id:"base", nombre:"Base", tipo:"one", ops:["leche200","yogurgriego150","skyr150"] },
@@ -627,7 +629,7 @@ const DEFAULT_PLAN = {
           { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove15"] },
           { id:"postre",nombre:"Postre opcional", nota:"el único opcional de todo el plan", tipo:"one", ops:["fruta200","skyr150","yogurprot","cafe","infusion","refrescozero"] }
         ],
-        notas:[["Es la comida grande del día","800 kcal de las 2.600. Proteína a la plancha o al horno, el hidrato a peso y la ensalada o la verdura dentro del plato."],
+        notas:[["Es tu primera comida del día","Desde el 5 de octubre no hay media mañana: hasta aquí, café solo o infusión, que no cuentan. Es también la comida grande: unas 760 kcal de las 2.000. Proteína a la plancha o al horno, el hidrato a peso y la ensalada o la verdura dentro del plato."],
                ["El aceite es el que se descontrola","Una cucharada sopera son 10 g y 90 kcal. Tres chorros a ojo en la sartén pueden ser 40 g. Échalo con cuchara, no con la botella."]] },
 
       { id:"merienda", nombre:"Merienda", icon:"🥤", hora:"18:45",
@@ -760,15 +762,15 @@ const DEFAULT_PLAN = {
           361, 39, 32, 6.6, "Cena", "La cena de los días que llegas tarde y no quieres cocinar: la crema ya la tienes hecha del domingo.",
           ["cremacalab250","picada150","panint80"]]
       ]},
-      { cat:"Desayunos y meriendas montados", items:[
+      { cat:"Meriendas montadas", items:[
         ["mt_tazoncrema","Tazón de crema de arroz con plátano (suple)","2 cazos y medio de crema de arroz · 1 vaso de leche · 1 plátano · medio puñado de nueces",
-          597, 16.4, 103, 12.2, "Media mañana", "La forma más rápida de llegar a los hidratos sin cocinar. Se pasa de los 82 g de hidrato de la comida: úsalo los días que entrenas por la mañana.",
+          597, 16.4, 103, 12.2, "Merienda", "La forma más rápida de llegar a los hidratos sin cocinar. Se pasa de los 82 g de hidrato de la comida: úsalo los días que entrenas por la mañana.",
           ["cremaarroz80","leche200","platano","fsecos15"]],
         ["mt_tostadaaguacate","Tostada de aguacate y huevo con plátanos","3 rebanadas de pan · medio aguacate · 2 huevos · tomate · 2 plátanos",
-          682, 24.2, 84.4, 25.4, "Media mañana", "Es la media mañana más grande del plan. Los dos plátanos son la mitad del hidrato: si te sobra comida, deja uno.",
+          682, 24.2, 84.4, 25.4, "Merienda", "Es el plato más grande de esta sección. Los dos plátanos son la mitad del hidrato: si te sobra comida, deja uno.",
           ["panint80","aguacate80","huevos2","tomate200","platano2"]],
         ["mt_tazoncopos","Tazón de copos de sabores con crema de cacahuete (suple)","2 cazos y medio de copos · 1 vaso de leche · fruta · 1 cucharada de crema de cacahuete",
-          626, 24.4, 84.2, 19, "Media mañana", "Se deja hecho la noche antes en un táper en la nevera y se come frío.",
+          626, 24.4, 84.2, 19, "Merienda", "Se deja hecho la noche antes en un táper en la nevera y se come frío.",
           ["avenasabor80","leche200","fruta200","cremacacah20"]],
         ["mt_batidopost","Batido post-entreno con crema de arroz (suple)","1 cazo de proteína · 1 cazo y medio de crema de arroz · 1 vaso de leche · 1 plátano",
           509, 35.8, 78, 5.9, "Merienda", "El de los días que entrenas por la tarde. Se bebe en cinco minutos y no quita el hambre de la cena.",
@@ -943,7 +945,7 @@ const DEFAULT_PLAN = {
       ["Arroz de bote o de bolsa + 2 latas de atún", "Microondas 2 minutos, atún escurrido, tomate y una cucharada y media de aceite. Cinco minutos de principio a fin."],
       ["Pollo asado del supermercado + patata al microondas", "Media pechuga del pollo asado quitándole la piel, una patata pinchada 8 minutos en el micro y ensalada de bolsa."],
       ["Tortilla de 3 huevos + pan", "Lo más rápido que hay con proteína de verdad. Con champiñón de bote dentro tarda lo mismo."],
-      ["Batido de crema de arroz y proteína (suple)", "1 cazo de proteína + 1 cazo y medio de crema de arroz en leche. La comida de emergencia: no sustituye a la comida grande, pero salva la media mañana o la merienda."]
+      ["Batido de crema de arroz y proteína (suple)", "1 cazo de proteína + 1 cazo y medio de crema de arroz en leche. La comida de emergencia: no sustituye a la comida grande, pero salva la merienda."]
     ]},
     { cat:"Para dejar hecho el domingo", items:[
       ["Arroz o pasta para tres días", "360 g de arroz en seco dan tres platos grandes. En la nevera aguanta perfectamente y frío se come mejor de lo que parece."],
@@ -956,8 +958,8 @@ const DEFAULT_PLAN = {
   /* --- REGLAS Y EQUIVALENCIAS --- */
   reglas: {
     equivalencias: [
-      "El objetivo del día son 2.600 kcal con 150 g de proteína, 320 g de hidratos y 78 g de grasa. No hace falta clavarlo: si acabas la semana con la media cerca, está bien hecho.",
-      "De dónde sale el 2.600: tu gasto de mantenimiento con 83 kg, 1,83 m y 29 años, y contando los 10.000 pasos, los 3 días de pesas, el hyrox y el pádel, son unas 2.934 kcal. Le quitamos 334, que es un 11 %. Es un déficit corto a propósito: lo justo para que la grasa baje sin que los entrenos se caigan.",
+      "El objetivo del día son 2.000 kcal con 112 g de proteína, 246 g de hidratos y 63 g de grasa. No hace falta clavarlo: si acabas la semana con la media cerca, está bien hecho.",
+      "De dónde sale el 2.000: tu gasto de mantenimiento con 83 kg, 1,83 m y 29 años, y contando los 10.000 pasos, los 3 días de pesas, el hyrox y el pádel, son unas 2.934 kcal. Hasta el 4 de octubre el plan era de 2.600. Desde el 5 quitamos la media mañana, unas 600 kcal, porque a esa hora no tenías hambre: tu primera comida es la comida.",
       "Cada grupo tiene una sola ración por alimento: la que está puesta es LA que toca. No hay versión grande y versión pequeña del mismo plato para elegir.",
       "El arroz y la pasta se pesan EN SECO. 100 g en seco son un plato normal ya cocido; cocidos pesan casi el triple y el ojo se equivoca siempre por arriba.",
       "1 cazo de proteína ≈ 30 g · 1 cazo y medio de copos de sabores o de crema de arroz ≈ 50 g · 2 cazos y medio ≈ 80 g. El cacito viene dentro del bote.",
@@ -987,7 +989,7 @@ const DEFAULT_PLAN = {
     "En el hyrox apunta el TIEMPO TOTAL del circuito en la nota del día. Cada semana cambias una sola cosa: o bajas el tiempo con los mismos volúmenes, o subes un volumen y aceptas que el tiempo suba. Nunca las dos. Por debajo de 25 minutos subimos las carreras a 400 m.",
     "Los 10.000 pasos van APARTE del entreno. No los cuentes dentro ni te los descuentes el día que entrenas fuerte: son la base sobre la que se apoya el déficit.",
     "Creatina: 3 g todos los días, en la merienda. Da igual si entrenas o no. No hace falta cargar ni descansar, y la hora exacta no cambia nada: va en la merienda porque es la comida que cae cerca del entreno y así no se te olvida.",
-    "Pésate UN SOLO DÍA a la semana, siempre el mismo, en ayunas. Apúntalo y olvídate. Aquí no hay número al que llegar: lo previsible es bajar 0,2-0,3 kg por semana al principio y que luego se aplane. El aviso solo salta por encima de medio kilo en una semana, que ya sería demasiado rápido.",
+    "Pésate UN SOLO DÍA a la semana, siempre el mismo, en ayunas. Apúntalo y olvídate. Aquí no hay número al que llegar: sin la media mañana el déficit es mayor y es normal que baje más rápido que las primeras semanas. El aviso salta por encima de medio kilo en una semana: si pasa dos semanas seguidas, dímelo.",
     "Si has comido uno de los platos ya montados, añádelo en «Platos y guisos ya montados» y NO rellenes esa comida arriba: las cantidades ya están cuadradas.",
     "En este plan NO hay opcionales: en cada comida eliges una cosa de cada grupo y las coges todas. El único opcional es el postre de la comida.",
     "Agua: entre 2,5 y 3 litros. Con 4 entrenos, un partido de pádel y creatina, es más de lo que crees. El agua, el café solo y las infusiones no se apuntan: son libres y no aparecen como opción en ninguna comida."
@@ -1127,7 +1129,15 @@ function dia(iso){
    estructuras de comidas duplicadas en el fichero del plan. */
 function comidasDe(tipo){ return S.plan.dias[tipo] || S.plan.dias.entreno; }
 function objetivoDe(tipo){ return S.plan.objetivos[tipo] || S.plan.objetivos.entreno; }
-function comidasDelDia(iso){ return comidasDe(dia(iso).tipo); }
+/* Una comida con `hasta:"AAAA-MM-DD"` deja de existir a partir del día siguiente.
+   Los días anteriores la siguen viendo y sumando, y cualquier día que ya tenga algo
+   apuntado en ella también: retirar una comida nunca reescribe el histórico. */
+function comidaVigente(iso, m){
+  if(!m.hasta || iso <= m.hasta) return true;
+  const sel = S.log[iso] && S.log[iso].sel && S.log[iso].sel[m.id];
+  return !!(sel && Object.keys(sel).length);
+}
+function comidasDelDia(iso){ return comidasDe(dia(iso).tipo).filter(m=>comidaVigente(iso, m)); }
 function objetivo(iso){ return objetivoDe(dia(iso).tipo); }
 let CAT = {};
 function indexarCategorias(){
