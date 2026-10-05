@@ -249,6 +249,10 @@ header{
 .ejsvg .fl{stroke-width:1.9;opacity:.85}
 .ejsvg .re{fill:currentColor;stroke:none;opacity:.9}
 .ejsvg .pt{stroke-width:4.6}
+/* fila de drop set: debajo de las series, no suma */
+.sets tr.droprow td{border-top:1px dashed var(--line);padding-top:6px}
+.sets tr.droprow td:first-child{color:var(--acc);font-weight:700}
+.sets td.dropnota{font-size:10.5px;color:var(--dim2);text-align:center}
 .ex .exn{font-weight:650;font-size:14px;flex:1;line-height:1.3}
 .ex .exi{font-size:11.5px;color:var(--dim2);margin-bottom:9px}
 .ex .exi b{color:var(--dim);font-weight:600}
@@ -402,6 +406,8 @@ const DEFAULT_PLAN = {
   /* Un solo objetivo: con 4 entrenos y un partido de pádel a la semana casi no
      hay días de descanso reales, así que no tiene sentido duplicar estructuras. */
   tipoUnico: true,
+  /* los 7 ejercicios con «+ drop» llevan una fila Drop aparte, que no suma */
+  registroDrop: true,
   marcarEleccion: true,
   objetivos: {
     entreno: { kcal: 2000, p: 112, hc: 246, g: 63 }
@@ -982,7 +988,7 @@ const DEFAULT_PLAN = {
     "Top set y back-off van SOLO en el primer ejercicio de cada día: press banca, remo sentado y prensa. Los back-off van anclados al top set, siempre un 15 % menos: si el top set sube, ellos suben. No los progreses por separado.",
     "En esos tres ejercicios, ANTES del top set haz 1 serie de aproximación: 12-15 repeticiones con la mitad del peso, sin acercarte al fallo. No se apunta, porque no es trabajo: es engrasar el movimiento. Ahí es donde va tu serie larga de 20, no delante de las series de trabajo — el top set tiene que caer con el músculo fresco, que es de donde sale el peso que perseguimos.",
     "Drop set SOLO en el último ejercicio de cada grupo muscular, y solo en máquina o polea. Una bajada del 30-35 %, sin descanso, hasta que la técnica se ensucie.",
-    "Los drop sets NO se progresan ni se apuntan como marca. El número que perseguimos es el de las series de trabajo. Si intentas subir peso en los drops, solo llegas peor al entreno siguiente: el drop es el postre, no el plato.",
+    "Los drop sets NO se progresan ni se apuntan como marca. Van en su fila «Drop», debajo de las tres series: así las series quedan con su peso de verdad y el drop no suma al volumen. El número que perseguimos es el de las series de trabajo. Si intentas subir peso en los drops, solo llegas peor al entreno siguiente: el drop es el postre, no el plato.",
     "Deja 1 repetición en el depósito en las series que no son la última. Con déficit encima, entrenar al fallo en todo te deja sin recuperación. La excepción son los drops.",
     "Los cuatro entrenos no tienen día fijo: marca el que hayas hecho. Lo único que no conviene es pegar PIERNA y HYROX seguidos, porque el hyrox lleva zancadas, trineo y 1.600 m de carrera.",
     "El pádel no cuenta como entreno, pero cansa. Si el partido cae el día antes de pierna, cambia el orden.",
@@ -1878,6 +1884,16 @@ function sesion(iso, diaId){
   if(!d.entreno[diaId]) d.entreno[diaId] = {};
   return d.entreno[diaId];
 }
+/* Drop sets con fila propia (plan.registroDrop): se guardan en la sesión con la clave
+   "d"+índice, FUERA del array de series. Así no entran en el volumen, ni en el contador
+   de series, ni en la mejor serie de la progresión: el drop no se progresa. */
+function tieneDrop(ex){ return !!(S.plan.registroDrop && /drop/i.test(ex.reps||"")); }
+function ultimoDrop(iso, diaId, exIdx){
+  const k = "d"+exIdx;
+  const fechas = Object.keys(S.log).filter(f=> f < iso && S.log[f].entreno && S.log[f].entreno[diaId] && S.log[f].entreno[diaId][k]).sort().reverse();
+  for(const f of fechas){ const x = (S.log[f].entreno[diaId][k]||[])[0]; if(x && (x.peso||x.reps)) return x; }
+  return null;
+}
 function ultimaSesion(iso, diaId, exIdx){
   const fechas = Object.keys(S.log).filter(f=> f < iso && S.log[f].entreno && S.log[f].entreno[diaId]).sort().reverse();
   for(const f of fechas){
@@ -1928,6 +1944,13 @@ function renderEntreno(){
         <td><input type="number" inputmode="decimal" data-set="${did}|${i}|${s}|peso" value="${cur.peso!=null?cur.peso:""}" placeholder="${phP}" class="${cur.peso?"done":""}"></td>
         <td><input type="number" inputmode="numeric" data-set="${did}|${i}|${s}|reps" value="${cur.reps!=null?cur.reps:""}" placeholder="${phR}" class="${cur.reps?"done":""}"></td>
         <td><input type="number" inputmode="numeric" data-set="${did}|${i}|${s}|rir" value="${cur.rir!=null?cur.rir:""}" placeholder="–" class="${cur.rir?"done":""}"></td></tr>`;
+    }
+    if(tieneDrop(ex)){
+      const dk = "d"+i, cd = (ses[dk]||[])[0]||{}, pd = ultimoDrop(iso, did, i)||{};
+      h += `<tr class="droprow"><td>Drop</td>
+        <td><input type="number" inputmode="decimal" data-set="${did}|${dk}|0|peso" value="${cd.peso!=null?cd.peso:""}" placeholder="${pd.peso||""}" class="${cd.peso?"done":""}"></td>
+        <td><input type="number" inputmode="numeric" data-set="${did}|${dk}|0|reps" value="${cd.reps!=null?cd.reps:""}" placeholder="${pd.reps||""}" class="${cd.reps?"done":""}"></td>
+        <td class="dropnota">no suma</td></tr>`;
     }
     h += `</tbody></table><div class="exfoot">
       <div class="last">${ult ? "Última vez ("+fechaLarga(ult.fecha)+"): "+ult.sets.map(x=>x&&x.reps?`${x.peso||"–"}×${x.reps}`:"–").join("  ") : "Primera vez con este ejercicio"}</div>
@@ -2400,8 +2423,10 @@ function generarResumen(){
       if(!s) return;
       const lineas = e.ejercicios.map((ex,i)=>{
         const sets = (s[i]||[]).filter(x=>x&&x.reps);
-        if(!sets.length) return null;
-        return `   – ${ex.n}: ` + sets.map(x=>`${x.peso||"–"}×${x.reps}${x.rir!=null&&x.rir!==""?` (RIR ${x.rir})`:""}`).join(" · ");
+        const dr = tieneDrop(ex) ? (s["d"+i]||[])[0] : null;
+        const dtxt = dr && dr.reps ? ` · drop ${dr.peso||"–"}×${dr.reps}` : "";
+        if(!sets.length && !dtxt) return null;
+        return `   – ${ex.n}: ` + sets.map(x=>`${x.peso||"–"}×${x.reps}${x.rir!=null&&x.rir!==""?` (RIR ${x.rir})`:""}`).join(" · ") + dtxt;
       }).filter(Boolean);
       if(!lineas.length) return;
       hubo=true;
