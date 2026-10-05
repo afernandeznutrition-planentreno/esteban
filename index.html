@@ -384,8 +384,8 @@ nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width
 
 /* =====================================================================
    PLAN DE ESTEBAN — septiembre 2026
-   RECOMPOSICIÓN CORPORAL · 2.600 kcal hasta el 4/10/2026 · 2.000 desde el 5/10
-   (fuera la media mañana: no tenía hambre por la mañana).
+   RECOMPOSICIÓN CORPORAL · 2.600 kcal hasta el 4/10/2026 · 2.120 desde el 5/10
+   (fuera la media mañana: no tenía hambre por la mañana; su cazo de proteína pasa a la merienda).
    83 kg · 1,83 m · 29 años. Mantenimiento 2.934 kcal (Mifflin-St Jeor × 1,60).
    Un solo tipo de día: entrene o no, come lo mismo.
    Desde el 5/10: 3 comidas (comida, merienda, cena). La media mañana sigue en el
@@ -410,7 +410,7 @@ const DEFAULT_PLAN = {
   registroDrop: true,
   marcarEleccion: true,
   objetivos: {
-    entreno: { kcal: 2000, p: 112, hc: 246, g: 63 }
+    entreno: { kcal: 2120, p: 136, hc: 248, g: 65 }
   },
   pasosObjetivo: 10000,
 
@@ -635,7 +635,7 @@ const DEFAULT_PLAN = {
           { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","aove15"] },
           { id:"postre",nombre:"Postre opcional", nota:"el único opcional de todo el plan", tipo:"one", ops:["fruta200","skyr150","yogurprot","cafe","infusion","refrescozero"] }
         ],
-        notas:[["Es tu primera comida del día","Desde el 5 de octubre no hay media mañana: hasta aquí, café solo o infusión, que no cuentan. Es también la comida grande: unas 760 kcal de las 2.000. Proteína a la plancha o al horno, el hidrato a peso y la ensalada o la verdura dentro del plato."],
+        notas:[["Es tu primera comida del día","Desde el 5 de octubre no hay media mañana: hasta aquí, café solo o infusión, que no cuentan. Es también la comida grande: unas 760 kcal de las 2.120. Proteína a la plancha o al horno, el hidrato a peso y la ensalada o la verdura dentro del plato."],
                ["El aceite es el que se descontrola","Una cucharada sopera son 10 g y 90 kcal. Tres chorros a ojo en la sartén pueden ser 40 g. Échalo con cuchara, no con la botella."]] },
 
       { id:"merienda", nombre:"Merienda", icon:"🥤", hora:"18:45",
@@ -645,6 +645,7 @@ const DEFAULT_PLAN = {
             { id:"prot", nombre:"Proteína", tipo:"one", ops:["prot30"] },
             { id:"hc",   nombre:"Hidrato", nota:"la crema de arroz es la que entra mejor justo después de entrenar", tipo:"one", ops:["cremaarroz50","avenasabor50"] },
             { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
+            { id:"protx", nombre:"Cazo extra de proteína", nota:"el que tomabas en la media mañana: en agua, dentro del batido o mezclado con el yogur", tipo:"one", ops:["prot30"] },
             { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días. Aquí, que es cuando entrenas. El día que no entrenes también.", tipo:"many", ops:["creatina3"] }
           ]},
           { id:"lacteo", fam:"Dulce", nombre:"Lácteo", grupos:[
@@ -652,6 +653,7 @@ const DEFAULT_PLAN = {
             { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["avenasabor50","avena50","tortitas5","panint60"] },
             { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
             { id:"gra",  nombre:"Grasa", tipo:"one", ops:["fsecos20","cremacacah20"] },
+            { id:"protx", nombre:"Cazo extra de proteína", nota:"el que tomabas en la media mañana: en agua, dentro del batido o mezclado con el yogur", tipo:"one", ops:["prot30"] },
             { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días.", tipo:"many", ops:["creatina3"] }
           ]},
           { id:"salado", fam:"Salada", nombre:"Salada", grupos:[
@@ -659,12 +661,14 @@ const DEFAULT_PLAN = {
             { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["panint80","panmolde3","tortitas5"] },
             { id:"fruta",nombre:"Fruta", tipo:"one", ops:["platano","fruta200"] },
             { id:"gra",  nombre:"Grasa", tipo:"one", ops:["aguacate80","cremacacah15"] },
+            { id:"protx", nombre:"Cazo extra de proteína", nota:"el que tomabas en la media mañana: en agua, dentro del batido o mezclado con el yogur", tipo:"one", ops:["prot30"] },
             { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días.", tipo:"many", ops:["creatina3"] }
           ]},
           { id:"capricho", fam:"Dulce", nombre:"Capricho", grupos:[
             { id:"combo",nombre:"Combinación", tipo:"one", ops:["cap_skyrcacao","cap_yogurnuez"] },
             { id:"hc",   nombre:"Hidrato", tipo:"one", ops:["avenasabor50","tortitas3","panint60"] },
             { id:"gra",  nombre:"Grasa", tipo:"one", ops:["fsecos20","cremacacah20"] },
+            { id:"protx", nombre:"Cazo extra de proteína", nota:"el que tomabas en la media mañana: en agua, dentro del batido o mezclado con el yogur", tipo:"one", ops:["prot30"] },
             { id:"sup",  nombre:"Creatina", nota:"3 g al día, todos los días.", tipo:"many", ops:["creatina3"] }
           ]}
         ],
@@ -964,8 +968,8 @@ const DEFAULT_PLAN = {
   /* --- REGLAS Y EQUIVALENCIAS --- */
   reglas: {
     equivalencias: [
-      "El objetivo del día son 2.000 kcal con 112 g de proteína, 246 g de hidratos y 63 g de grasa. No hace falta clavarlo: si acabas la semana con la media cerca, está bien hecho.",
-      "De dónde sale el 2.000: tu gasto de mantenimiento con 83 kg, 1,83 m y 29 años, y contando los 10.000 pasos, los 3 días de pesas, el hyrox y el pádel, son unas 2.934 kcal. Hasta el 4 de octubre el plan era de 2.600. Desde el 5 quitamos la media mañana, unas 600 kcal, porque a esa hora no tenías hambre: tu primera comida es la comida.",
+      "El objetivo del día son 2.120 kcal con 136 g de proteína, 248 g de hidratos y 65 g de grasa. No hace falta clavarlo: si acabas la semana con la media cerca, está bien hecho.",
+      "De dónde sale el 2.120: tu gasto de mantenimiento con 83 kg, 1,83 m y 29 años, y contando los 10.000 pasos, los 3 días de pesas, el hyrox y el pádel, son unas 2.934 kcal. Hasta el 4 de octubre el plan era de 2.600. Desde el 5 quitamos la media mañana, unas 600 kcal, porque a esa hora no tenías hambre: tu primera comida es la comida. El cazo de proteína que iba en ella pasa a la merienda (120 kcal y 24 g de proteína), y por eso el objetivo queda en 2.120.",
       "Cada grupo tiene una sola ración por alimento: la que está puesta es LA que toca. No hay versión grande y versión pequeña del mismo plato para elegir.",
       "El arroz y la pasta se pesan EN SECO. 100 g en seco son un plato normal ya cocido; cocidos pesan casi el triple y el ojo se equivoca siempre por arriba.",
       "1 cazo de proteína ≈ 30 g · 1 cazo y medio de copos de sabores o de crema de arroz ≈ 50 g · 2 cazos y medio ≈ 80 g. El cacito viene dentro del bote.",
